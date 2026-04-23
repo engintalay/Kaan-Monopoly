@@ -77,8 +77,8 @@ def add_embossed_text(tile_shape, text, size=3.5):
             return tile_shape
         solid = ss.Shape.extrude(FreeCAD.Vector(0, 0, 0.6))
         bb    = solid.BoundBox
-        cx    = (W - bb.XLength) / 2
-        cy    = max(1.0, (D - SD - bb.YLength) / 2)
+        cx    = max(1.0, (W - bb.XLength) / 2)
+        cy    = 2.0  # alta yaz, şerit ve bağlantı oyuğundan uzak
         solid.translate(FreeCAD.Vector(cx, cy, H))
         doc.removeObject(ss.Name)
         return tile_shape.fuse(solid)

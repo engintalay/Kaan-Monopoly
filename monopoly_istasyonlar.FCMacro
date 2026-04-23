@@ -1,6 +1,6 @@
 # =============================================================
-# MONOPOLY TÜRKİYE - İstasyonlar (Osmanlı Büyük Camileri)
-# Süleymaniye | Selimiye | Anıtkabir | Bursa Ulu Camii
+# MONOPOLY TÜRKİYE - İstasyonlar (Türkiye'nin Büyük Camileri)
+# Süleymaniye | Selimiye | Eyüp Sultan | Bursa Ulu Camii
 # Her biri: 200₺, kira: 1=25, 2=50, 3=100, 4=200
 # FreeCad Macro - Macro > Execute Macro ile çalıştırın
 # =============================================================
@@ -24,7 +24,7 @@ ISTASYON_COLOR = (0.5, 0.5, 0.5)  # Gri
 ISTASYONLAR = [
     {"name": "Suleymaniye",  "label": "Süleymaniye",   "konum": "İstanbul", "fiyat": 200},
     {"name": "Selimiye",     "label": "Selimiye",       "konum": "Edirne",   "fiyat": 200},
-    {"name": "Anitkabir",    "label": "Anıtkabir",      "konum": "Ankara",   "fiyat": 200},
+    {"name": "EyupSultan",   "label": "Eyüp Sultan",    "konum": "İstanbul", "fiyat": 200},
     {"name": "BursaUluCami", "label": "Bursa Ulu Cami", "konum": "Bursa",    "fiyat": 200},
 ]
 
@@ -59,8 +59,8 @@ def add_embossed_text(tile_shape, text, size=3.5):
             return tile_shape
         solid = ss.Shape.extrude(FreeCAD.Vector(0, 0, 0.6))
         bb    = solid.BoundBox
-        cx    = (W - bb.XLength) / 2
-        cy    = max(1.0, (D - bb.YLength) / 2)
+        cx    = max(1.0, (W - bb.XLength) / 2)
+        cy    = 2.0  # alta yaz, bağlantı oyuğundan uzak
         solid.translate(FreeCAD.Vector(cx, cy, H))
         doc.removeObject(ss.Name)
         return tile_shape.fuse(solid)
@@ -84,4 +84,4 @@ doc.recompute()
 FreeCADGui.activeDocument().activeView().viewIsometric()
 FreeCADGui.SendMsgToActiveView("ViewFit")
 doc.saveAs(os.path.expanduser("~/monopoly_istasyonlar.FCStd"))
-print("✅ İstasyonlar tamamlandı: Süleymaniye, Selimiye, Anıtkabir, Bursa Ulu Cami")
+print("✅ İstasyonlar tamamlandı: Süleymaniye, Selimiye, Eyüp Sultan, Bursa Ulu Cami")
