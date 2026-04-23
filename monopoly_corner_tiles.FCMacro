@@ -1,0 +1,164 @@
+# =============================================================
+# MONOPOLY - Köşe Kareler (Corner Squares)
+# Boyut: 60x60mm  |  Yükseklik: 4mm
+# Bağlantı: Her köşe farklı — aşağıdaki montaj şemasına bak
+# FreeCad Macro - Macro > Execute Macro ile çalıştırın
+# =============================================================
+#
+# MONTAJ ŞEMASI (yukarıdan görünüm):
+#
+#  [HapeseGit]←←←←←←←←←[FreePark]
+#       ↓   ← üst sıra        ↑
+#       ↓                      ↑ sağ sütun
+#      [GO] →→→→→→→→→→→ [Hapis]
+#           alt sıra →
+#
+#  Her köşenin bağlantı tarafları:
+#  ┌─────────────────────────────────────────────────┐
+#  │  GO         : DOĞU(+X)=DİŞ,  KUZEY(+Y)=YUVA   │
+#  │  Hapis      : BATI(-X)=YUVA, KUZEY(+Y)=DİŞ    │
+#  │  Free Park  : GÜNEY(-Y)=YUVA, BATI(-X)=DİŞ    │
+#  │  Hapse Git  : DOĞU(+X)=YUVA, GÜNEY(-Y)=DİŞ   │
+#  └─────────────────────────────────────────────────┘
+#  Diğer iki taraf: düz (bağlantısız)
+# =============================================================
+
+import FreeCAD
+import Part
+import FreeCADGui
+import os
+
+doc = FreeCAD.newDocument("MonopolyCornerTiles")
+
+# --- Köşe kare boyutları ---
+W, D, H = 60.0, 60.0, 4.0
+
+# --- Puzzle Bağlantı Parametreleri (normal kare ile aynı) ---
+NECK_W  = 8.0
+NECK_D  = 5.0
+HEAD_R  = 5.5
+TAB_TOL = 0.2
+
+
+def make_tab_east(w, d, h):
+    """Doğu yüzünden (+X) dışarı çıkan puzzle dişi"""
+    neck = Part.makeBox(NECK_D, NECK_W, h)
+    neck.translate(FreeCAD.Vector(w, (d - NECK_W) / 2, 0))
+    head = Part.makeCylinder(HEAD_R, h)
+    head.translate(FreeCAD.Vector(w + NECK_D, d / 2, 0))
+    return neck.fuse(head)
+
+
+def make_blank_west(d, h):
+    """Batı yüzünden (+X yönünde) içeri giren puzzle yuvası"""
+    neck_b = Part.makeBox(NECK_D + TAB_TOL, NECK_W + 2 * TAB_TOL, h)
+    neck_b.translate(FreeCAD.Vector(0, (d - NECK_W) / 2 - TAB_TOL, 0))
+    head_b = Part.makeCylinder(HEAD_R + TAB_TOL, h)
+    head_b.translate(FreeCAD.Vector(NECK_D, d / 2, 0))
+    return neck_b.fuse(head_b)
+
+
+def make_tab_north(w, d, h):
+    """Kuzey yüzünden (+Y) dışarı çıkan puzzle dişi"""
+    neck = Part.makeBox(NECK_W, NECK_D, h)
+    neck.translate(FreeCAD.Vector((w - NECK_W) / 2, d, 0))
+    head = Part.makeCylinder(HEAD_R, h)
+    head.translate(FreeCAD.Vector(w / 2, d + NECK_D, 0))
+    return neck.fuse(head)
+
+
+def make_blank_south(w, h):
+    """Güney yüzünden (+Y yönünde) içeri giren puzzle yuvası"""
+    neck_b = Part.makeBox(NECK_W + 2 * TAB_TOL, NECK_D + TAB_TOL, h)
+    neck_b.translate(FreeCAD.Vector((w - NECK_W) / 2 - TAB_TOL, 0, 0))
+    head_b = Part.makeCylinder(HEAD_R + TAB_TOL, h)
+    head_b.translate(FreeCAD.Vector(w / 2, NECK_D, 0))
+    return neck_b.fuse(head_b)
+
+
+def make_tab_south(w, h):
+    """Güney yüzünden (-Y) dışarı çıkan puzzle dişi"""
+    neck = Part.makeBox(NECK_W, NECK_D, h)
+    neck.translate(FreeCAD.Vector((w - NECK_W) / 2, -NECK_D, 0))
+    head = Part.makeCylinder(HEAD_R, h)
+    head.translate(FreeCAD.Vector(w / 2, -NECK_D, 0))
+    return neck.fuse(head)
+
+
+def make_blank_north(w, d, h):
+    """Kuzey yüzünden (-Y yönünde) içeri giren puzzle yuvası"""
+    neck_b = Part.makeBox(NECK_W + 2 * TAB_TOL, NECK_D + TAB_TOL, h)
+    neck_b.translate(FreeCAD.Vector((w - NECK_W) / 2 - TAB_TOL, d - NECK_D - TAB_TOL, 0))
+    head_b = Part.makeCylinder(HEAD_R + TAB_TOL, h)
+    head_b.translate(FreeCAD.Vector(w / 2, d - NECK_D, 0))
+    return neck_b.fuse(head_b)
+
+
+def make_blank_east(w, d, h):
+    """Doğu yüzünden (-X yönünde) içeri giren puzzle yuvası"""
+    neck_b = Part.makeBox(NECK_D + TAB_TOL, NECK_W + 2 * TAB_TOL, h)
+    neck_b.translate(FreeCAD.Vector(w - NECK_D - TAB_TOL, (d - NECK_W) / 2 - TAB_TOL, 0))
+    head_b = Part.makeCylinder(HEAD_R + TAB_TOL, h)
+    head_b.translate(FreeCAD.Vector(w - NECK_D, d / 2, 0))
+    return neck_b.fuse(head_b)
+
+
+# ──────────────────────────────────────────
+# GO Köşesi: Doğu=DİŞ, Kuzey=YUVA
+# ──────────────────────────────────────────
+go_base  = Part.makeBox(W, D, H)
+go_shape = go_base.fuse(make_tab_east(W, D, H)).cut(make_blank_north(W, D, H))
+go_shape.translate(FreeCAD.Vector(0, 0, 0))
+go_obj   = doc.addObject("Part::Feature", "GO_Corner")
+go_obj.Shape = go_shape
+go_obj.ViewObject.ShapeColor  = (0.8, 1.0, 0.8)
+go_obj.ViewObject.DisplayMode = "Shaded"
+
+# ──────────────────────────────────────────
+# Hapis Köşesi: Batı=YUVA, Kuzey=DİŞ
+# ──────────────────────────────────────────
+jail_base  = Part.makeBox(W, D, H)
+jail_shape = jail_base.cut(make_blank_west(D, H)).fuse(make_tab_north(W, D, H))
+jail_shape.translate(FreeCAD.Vector(80, 0, 0))
+jail_obj   = doc.addObject("Part::Feature", "Jail_Corner")
+jail_obj.Shape = jail_shape
+jail_obj.ViewObject.ShapeColor  = (1.0, 0.85, 0.5)
+jail_obj.ViewObject.DisplayMode = "Shaded"
+
+# ──────────────────────────────────────────
+# Ücretsiz Park: Güney=YUVA, Batı=DİŞ
+# (Sağ sütundan gelen diş → güney yuvaya; sol tarafa diş → üst sıranın ilk karesine)
+# ──────────────────────────────────────────
+park_base  = Part.makeBox(W, D, H)
+park_shape = park_base.cut(make_blank_south(W, H)).fuse(
+    # Batı yüzünden DİŞ: -X yönünde çıkar (make_tab_east ama aynada)
+    # Batı dişi = doğu dişinin X-ayna görüntüsü, daha basit olarak:
+    # boyun x=-(NECK_D)..0, kafa x=-NECK_D
+    Part.makeBox(NECK_D, NECK_W, H).translate(
+        FreeCAD.Vector(-NECK_D, (D - NECK_W) / 2, 0)
+    ).fuse(
+        Part.makeCylinder(HEAD_R, H).translate(FreeCAD.Vector(-NECK_D, D / 2, 0))
+    )
+)
+park_shape.translate(FreeCAD.Vector(160, 0, 0))
+park_obj  = doc.addObject("Part::Feature", "FreeParking_Corner")
+park_obj.Shape = park_shape
+park_obj.ViewObject.ShapeColor  = (0.8, 0.9, 1.0)
+park_obj.ViewObject.DisplayMode = "Shaded"
+
+# ──────────────────────────────────────────
+# Hapse Git Köşesi: Doğu=YUVA, Güney=DİŞ
+# ──────────────────────────────────────────
+gtj_base  = Part.makeBox(W, D, H)
+gtj_shape = gtj_base.cut(make_blank_east(W, D, H)).fuse(make_tab_south(W, H))
+gtj_shape.translate(FreeCAD.Vector(240, 0, 0))
+gtj_obj   = doc.addObject("Part::Feature", "GoToJail_Corner")
+gtj_obj.Shape = gtj_shape
+gtj_obj.ViewObject.ShapeColor  = (1.0, 0.8, 0.8)
+gtj_obj.ViewObject.DisplayMode = "Shaded"
+
+doc.recompute()
+FreeCADGui.activeDocument().activeView().viewIsometric()
+FreeCADGui.SendMsgToActiveView("ViewFit")
+doc.saveAs(os.path.expanduser("~/monopoly_corner_tiles.FCStd"))
+print("✅ 4 köşe kare (puzzle bağlantılı) oluşturuldu: GO, Hapis, FreePark, HapeseGit")

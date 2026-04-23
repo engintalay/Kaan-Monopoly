@@ -1,0 +1,15 @@
+# Claude Code ayarları
+.claude/
+
+# FreeCAD çıktı dosyaları
+*.FCStd
+*.FCStd1
+*.FCBak
+
+# 3D baskı çıktıları (kaynak makrolardan üretilir)
+*.stl
+*.obj
+
+# Sistem
+.DS_Store
+__pycache__/

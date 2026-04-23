@@ -1,0 +1,70 @@
+# =============================================================
+# MONOPOLY - Evler ve Oteller
+# Ev: 8x8x8mm  |  Otel: 12x8x10mm
+# FreeCad Macro - Macro > Execute Macro ile çalıştırın
+# =============================================================
+
+import FreeCAD
+import Part
+import FreeCADGui
+import os
+
+doc = FreeCAD.newDocument("MonopolyBuildings")
+
+# ============================================================
+# EV (House) - Klasik Monopoly evi şekli
+# ============================================================
+def make_house(x_offset=0):
+    body = Part.makeBox(8, 8, 6)
+
+    # Çatı: üçgen profili Y ekseni boyunca extrude ederek kapalı solid oluştur
+    p1 = FreeCAD.Vector(0, 0, 6)
+    p2 = FreeCAD.Vector(8, 0, 6)
+    p3 = FreeCAD.Vector(4, 0, 10)
+    wire = Part.makePolygon([p1, p2, p3, p1])
+    face = Part.Face(wire)
+    roof = face.extrude(FreeCAD.Vector(0, 8, 0))
+
+    house = body.fuse(roof)
+    house.translate(FreeCAD.Vector(x_offset, 0, 0))
+    return house
+
+# ============================================================
+# OTEL (Hotel) - Düz çatılı, daha büyük bina
+# ============================================================
+def make_hotel(x_offset=0):
+    # Ana gövde
+    body = Part.makeBox(12, 8, 10)
+
+    # Çatı katmanı (ince düz plaka)
+    roof = Part.makeBox(13, 9, 1)
+    roof.translate(FreeCAD.Vector(-0.5, -0.5, 10))
+
+    # Baca (küçük silindir)
+    chimney = Part.makeCylinder(0.8, 3)
+    chimney.translate(FreeCAD.Vector(3, 4, 11))
+
+    hotel = body.fuse(roof).fuse(chimney)
+    hotel.translate(FreeCAD.Vector(x_offset, 0, 0))
+    return hotel
+
+# --- Ev oluştur (5 adet - bir renk grubu için) ---
+for i in range(5):
+    h = make_house(x_offset=i * 12)
+    obj = doc.addObject("Part::Feature", f"House_{i+1}")
+    obj.Shape = h
+    obj.ViewObject.ShapeColor = (0.1, 0.7, 0.1)  # Yeşil
+
+# --- Otel oluştur (2 adet) ---
+for i in range(2):
+    h = make_hotel(x_offset=i * 18)
+    obj = doc.addObject("Part::Feature", f"Hotel_{i+1}")
+    obj.Shape = h
+    obj.ViewObject.ShapeColor = (0.8, 0.1, 0.1)  # Kırmızı
+
+doc.recompute()
+FreeCADGui.activeDocument().activeView().viewIsometric()
+FreeCADGui.SendMsgToActiveView("ViewFit")
+
+doc.saveAs(os.path.expanduser("~/monopoly_buildings.FCStd"))
+print("✅ 5 Ev + 2 Otel oluşturuldu.")

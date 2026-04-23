@@ -1,0 +1,150 @@
+# =============================================================
+# MONOPOLY - Oyuncu Figürleri (Player Tokens)
+# 6 farklı figür: Şapka, Araba, Gemi, Köpek, Ütü, Silindir
+# Boyut: ~15mm yükseklik, 10mm taban çapı
+# FreeCad Macro - Macro > Execute Macro ile çalıştırın
+# =============================================================
+
+import FreeCAD
+import Part
+import FreeCADGui
+import os
+
+doc = FreeCAD.newDocument("MonopolyTokens")
+
+# ============================================================
+# 1. TABAN (tüm figürler için ortak)
+# ============================================================
+def make_base(x=0, y=0):
+    base = Part.makeCylinder(5, 1.5)
+    base.translate(FreeCAD.Vector(x, y, 0))
+    return base
+
+# ============================================================
+# 2. SİLİNDİR ŞAPKA (Top Hat)
+# ============================================================
+def make_top_hat(x=0, y=0):
+    brim = Part.makeCylinder(5, 1)           # Ağız kenarı (geniş)
+    crown = Part.makeCylinder(3, 10)         # Silindir gövde
+    crown.translate(FreeCAD.Vector(0, 0, 1))
+    top = Part.makeCylinder(3.2, 0.5)        # Üst kapak
+    top.translate(FreeCAD.Vector(0, 0, 11))
+    hat = brim.fuse(crown).fuse(top)
+    hat.translate(FreeCAD.Vector(x, y, 1.5))
+    return hat
+
+# ============================================================
+# 3. ARABA (Racing Car) - basitleştirilmiş
+# ============================================================
+def make_car(x=0, y=0):
+    body = Part.makeBox(14, 6, 4)            # Gövde
+    cabin = Part.makeBox(8, 6, 3)            # Kabin
+    cabin.translate(FreeCAD.Vector(3, 0, 4))
+    # Tekerlekler
+    def wheel(wx, wy):
+        w = Part.makeCylinder(2, 1.5)
+        w.rotate(FreeCAD.Vector(0,0,0), FreeCAD.Vector(1,0,0), 90)
+        w.translate(FreeCAD.Vector(wx, wy, 1))
+        return w
+    w1 = wheel(2, -0.5)
+    w2 = wheel(11, -0.5)
+    w3 = wheel(2, 5)
+    w4 = wheel(11, 5)
+    car = body.fuse(cabin).fuse(w1).fuse(w2).fuse(w3).fuse(w4)
+    car.translate(FreeCAD.Vector(x - 7, y - 3, 1.5))
+    return car
+
+# ============================================================
+# 4. GEMİ (Battleship) - basitleştirilmiş
+# ============================================================
+def make_ship(x=0, y=0):
+    hull = Part.makeBox(16, 6, 3)            # Tekne gövdesi
+    deck = Part.makeBox(10, 4, 2)            # Üst güverte
+    deck.translate(FreeCAD.Vector(3, 1, 3))
+    tower = Part.makeBox(4, 3, 4)            # Kule
+    tower.translate(FreeCAD.Vector(6, 1.5, 5))
+    cannon = Part.makeCylinder(0.8, 5)       # Top
+    cannon.rotate(FreeCAD.Vector(0,0,0), FreeCAD.Vector(0,1,0), -30)
+    cannon.translate(FreeCAD.Vector(11, 3, 7))
+    ship = hull.fuse(deck).fuse(tower).fuse(cannon)
+    ship.translate(FreeCAD.Vector(x - 8, y - 3, 1.5))
+    return ship
+
+# ============================================================
+# 5. KÖPEK (Scottie Dog) - basitleştirilmiş
+# ============================================================
+def make_dog(x=0, y=0):
+    body = Part.makeBox(10, 5, 6)            # Gövde
+    head = Part.makeSphere(3.5)              # Kafa
+    head.translate(FreeCAD.Vector(8, 2.5, 7))
+    # Bacaklar: -1.5'ten başlar, translate(z=1.5) sonrası tam z=0'da oturur
+    def leg(lx, ly):
+        l = Part.makeBox(2, 1.5, 4)
+        l.translate(FreeCAD.Vector(lx, ly, -1.5))
+        return l
+    l1 = leg(1, 0.5); l2 = leg(6, 0.5)
+    l3 = leg(1, 3);   l4 = leg(6, 3)
+    # Kuyruk
+    tail = Part.makeCylinder(0.8, 5)
+    tail.rotate(FreeCAD.Vector(0,0,0), FreeCAD.Vector(0,1,0), 45)
+    tail.translate(FreeCAD.Vector(-3, 2.5, 7))
+    dog = body.fuse(head).fuse(l1).fuse(l2).fuse(l3).fuse(l4).fuse(tail)
+    dog.translate(FreeCAD.Vector(x - 5, y - 2.5, 1.5))
+    return dog
+
+# ============================================================
+# 6. ÜTÜ (Iron) - basitleştirilmiş
+# ============================================================
+def make_iron(x=0, y=0):
+    sole = Part.makeBox(12, 6, 2)            # Taban
+    body = Part.makeBox(8, 5, 5)             # Gövde
+    body.translate(FreeCAD.Vector(2, 0.5, 2))
+    handle = Part.makeCylinder(0.8, 8)       # Sap
+    handle.rotate(FreeCAD.Vector(0,0,0), FreeCAD.Vector(1,0,0), 90)
+    handle.translate(FreeCAD.Vector(6, -0.5, 5))
+    iron = sole.fuse(body).fuse(handle)
+    iron.translate(FreeCAD.Vector(x - 6, y - 3, 1.5))
+    return iron
+
+# ============================================================
+# 7. YÜKSÜK (Thimble) - basitleştirilmiş
+# ============================================================
+def make_thimble(x=0, y=0):
+    outer = Part.makeCylinder(4, 10)
+    inner = Part.makeCylinder(3.2, 9)
+    inner.translate(FreeCAD.Vector(0, 0, 1))
+    cap = Part.makeSphere(4)
+    cap.translate(FreeCAD.Vector(0, 0, 10))
+    thimble = outer.fuse(cap).cut(inner)
+    thimble.translate(FreeCAD.Vector(x, y, 1.5))
+    return thimble
+
+# ============================================================
+# Tüm Figürleri Oluştur
+# ============================================================
+spacing = 30
+
+tokens = [
+    ("TopHat",   make_top_hat,  (0.3, 0.3, 0.3)),   # Koyu gri
+    ("Car",      make_car,      (0.5, 0.5, 0.5)),    # Gri
+    ("Ship",     make_ship,     (0.6, 0.6, 0.7)),    # Mavi-gri
+    ("Dog",      make_dog,      (0.4, 0.3, 0.2)),    # Kahverengi
+    ("Iron",     make_iron,     (0.7, 0.7, 0.8)),    # Açık gri
+    ("Thimble",  make_thimble,  (0.8, 0.6, 0.2)),    # Altın
+]
+
+for i, (name, fn, color) in enumerate(tokens):
+    base = make_base(x=i*spacing, y=0)
+    token_shape = fn(x=i*spacing, y=0)
+    combined = base.fuse(token_shape)
+
+    obj = doc.addObject("Part::Feature", f"Token_{name}")
+    obj.Shape = combined
+    obj.ViewObject.ShapeColor = color
+
+doc.recompute()
+FreeCADGui.activeDocument().activeView().viewIsometric()
+FreeCADGui.SendMsgToActiveView("ViewFit")
+
+doc.saveAs(os.path.expanduser("~/monopoly_tokens.FCStd"))
+print("✅ 6 oyuncu figürü oluşturuldu: Şapka, Araba, Gemi, Köpek, Ütü, Yüksük")

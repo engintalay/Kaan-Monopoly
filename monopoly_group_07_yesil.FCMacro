@@ -1,0 +1,100 @@
+# =============================================================
+# MONOPOLY TÜRKİYE - Grup 07: YEŞİL (Osmanlı İstanbul'u)
+# Eyüp Sultan Camii | Topkapı Sarayı | Dolmabahçe Sarayı
+# FreeCad Macro - Macro > Execute Macro ile çalıştırın
+# =============================================================
+
+import FreeCAD, Part, FreeCADGui, Draft, os
+
+W, D, H     = 40.0, 40.0, 4.0
+SW, SD, SH  = 40.0, 8.0, 6.0
+NECK_W  = 8.0
+NECK_D  = 5.0
+HEAD_R  = 5.5
+TAB_TOL = 0.2
+
+FONT = next((f for f in [
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    "/usr/share/fonts/dejavu/DejaVuSans.ttf",
+    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+] if os.path.exists(f)), "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
+
+GROUP_COLOR = (0.0, 0.7, 0.2)  # Yeşil
+
+PROPERTIES = [
+    {
+        "name": "EyupSultan", "label": "Eyüp Sultan",
+        "konum": "İstanbul", "fiyat": 300,
+        "kiralar": [26, 130, 390, 900, 1100, 1275], "ipotek": 150, "ev_maliyeti": 200,
+    },
+    {
+        "name": "Topkapi", "label": "Topkapı Sarayı",
+        "konum": "İstanbul", "fiyat": 300,
+        "kiralar": [26, 130, 390, 900, 1100, 1275], "ipotek": 150, "ev_maliyeti": 200,
+    },
+    {
+        "name": "Dolmabahce", "label": "Dolmabahçe",
+        "konum": "İstanbul", "fiyat": 320,
+        "kiralar": [28, 150, 450, 1000, 1200, 1400], "ipotek": 160, "ev_maliyeti": 200,
+    },
+]
+
+doc = FreeCAD.newDocument("MonopolyGrup07_Yesil")
+
+
+def make_tile_shape():
+    base  = Part.makeBox(W, D, H)
+    strip = Part.makeBox(SW, SD, SH)
+    strip.translate(FreeCAD.Vector(0, D - SD, H))
+
+    # Puzzle dişi: sağ yüzden (+X) çıkar, komşu kareye kilitlenir
+    neck_t = Part.makeBox(NECK_D, NECK_W, H)
+    neck_t.translate(FreeCAD.Vector(W, (D - NECK_W) / 2, 0))
+    head_t = Part.makeCylinder(HEAD_R, H)
+    head_t.translate(FreeCAD.Vector(W + NECK_D, D / 2, 0))
+    tab = neck_t.fuse(head_t)
+
+    # Puzzle yuvası: sol yüzden içeri girer, sol komşunun dişini alır
+    neck_b = Part.makeBox(NECK_D + TAB_TOL, NECK_W + 2 * TAB_TOL, H)
+    neck_b.translate(FreeCAD.Vector(0, (D - NECK_W) / 2 - TAB_TOL, 0))
+    head_b = Part.makeCylinder(HEAD_R + TAB_TOL, H)
+    head_b.translate(FreeCAD.Vector(NECK_D, D / 2, 0))
+    blank = neck_b.fuse(head_b)
+
+    return base.fuse(strip).fuse(tab).cut(blank)
+
+
+def add_embossed_text(tile_shape, text, size=3.5):
+    try:
+        ss = Draft.makeShapeString(String=text, FontFile=FONT, Size=size, Tracking=0.05)
+        doc.recompute()
+        if ss is None or ss.Shape.isNull():
+            return tile_shape
+        solid = ss.Shape.extrude(FreeCAD.Vector(0, 0, 0.6))
+        bb    = solid.BoundBox
+        cx    = (W - bb.XLength) / 2
+        cy    = max(1.0, (D - SD - bb.YLength) / 2)
+        solid.translate(FreeCAD.Vector(cx, cy, H))
+        doc.removeObject(ss.Name)
+        return tile_shape.fuse(solid)
+    except Exception as e:
+        print(f"Metin eklenemedi: {e}")
+        return tile_shape
+
+
+for i, prop in enumerate(PROPERTIES):
+    tile = make_tile_shape()
+    text_size = 3.5 if len(prop["label"]) <= 12 else 2.8
+    tile = add_embossed_text(tile, prop["label"], size=text_size)
+    tile.translate(FreeCAD.Vector(i * (W + 5), 0, 0))
+
+    obj = doc.addObject("Part::Feature", f"Yesil_{i+1:02d}_{prop['name']}")
+    obj.Shape = tile
+    obj.ViewObject.ShapeColor  = GROUP_COLOR
+    obj.ViewObject.DisplayMode = "Shaded"
+
+doc.recompute()
+FreeCADGui.activeDocument().activeView().viewIsometric()
+FreeCADGui.SendMsgToActiveView("ViewFit")
+doc.saveAs(os.path.expanduser("~/monopoly_group_07_yesil.FCStd"))
+print("✅ Grup 07 YEŞİL tamamlandı: Eyüp Sultan, Topkapı, Dolmabahçe")

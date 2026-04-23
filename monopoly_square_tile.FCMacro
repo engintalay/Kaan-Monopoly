@@ -1,0 +1,70 @@
+# =============================================================
+# MONOPOLY - Standart Mülk Karesi (Property Square)
+# Boyut: 40x40mm, Yükseklik: 4mm, Renk şeridi: 6mm
+# Bağlantı: Puzzle tipi — Sağ yüz DİŞ, Sol yüz YUVA
+# FreeCad Macro - Macro > Execute Macro ile çalıştırın
+# =============================================================
+#
+# MONTAJ SIRASI:
+#   [←YUVA] [Kare] [DİŞ→]  →  [←YUVA] [Kare] [DİŞ→]
+#
+#   Tahta üzerinde kareler şu yönde bağlanır:
+#   Alt sıra  : DİŞ sağa → (doğal yönelim)
+#   Sağ sütun : Kareyi 90° döndür, DİŞ yukarı
+#   Üst sıra  : Kareyi 180° döndür, DİŞ sola
+#   Sol sütun : Kareyi 270° döndür, DİŞ aşağı
+# =============================================================
+
+import FreeCAD
+import Part
+import FreeCADGui
+import os
+
+doc = FreeCAD.newDocument("MonopolySquareTile")
+
+# --- Boyutlar ---
+W, D, H     = 40.0, 40.0, 4.0
+SW, SD, SH  = 40.0, 8.0, 6.0
+
+# --- Puzzle Bağlantı Parametreleri ---
+NECK_W  = 8.0    # boyun genişliği (mm)
+NECK_D  = 5.0    # boyun derinliği / çıkıntı (mm)
+HEAD_R  = 5.5    # kafa yarıçapı (mm)  — HEAD_R > NECK_W/2 = kilit
+TAB_TOL = 0.2    # yuva toleransı (mm/taraf)
+
+# --- 1. Taban ---
+base = Part.makeBox(W, D, H)
+
+# --- 2. Renk Şeridi ---
+strip = Part.makeBox(SW, SD, SH)
+strip.translate(FreeCAD.Vector(0, D - SD, H))
+
+# --- 3. Puzzle Dişi — Sağ yüzden (+X) dışarı çıkar ---
+neck_t = Part.makeBox(NECK_D, NECK_W, H)
+neck_t.translate(FreeCAD.Vector(W, (D - NECK_W) / 2, 0))
+head_t = Part.makeCylinder(HEAD_R, H)
+head_t.translate(FreeCAD.Vector(W + NECK_D, D / 2, 0))
+tab = neck_t.fuse(head_t)
+
+# --- 4. Puzzle Yuvası — Sol yüzden (+X yönünde) içeri gider ---
+# Yuva boyutu = Diş boyutu + tolerans (her tarafta TAB_TOL)
+neck_b = Part.makeBox(NECK_D + TAB_TOL, NECK_W + 2 * TAB_TOL, H)
+neck_b.translate(FreeCAD.Vector(0, (D - NECK_W) / 2 - TAB_TOL, 0))
+head_b = Part.makeCylinder(HEAD_R + TAB_TOL, H)
+head_b.translate(FreeCAD.Vector(NECK_D, D / 2, 0))
+blank = neck_b.fuse(head_b)
+
+# --- 5. Birleştirme ---
+tile = base.fuse(strip).fuse(tab).cut(blank)
+
+# --- Belgeye ekle ---
+obj = doc.addObject("Part::Feature", "PropertySquare")
+obj.Shape = tile
+obj.ViewObject.ShapeColor  = (1.0, 1.0, 1.0)
+obj.ViewObject.DisplayMode = "Shaded"
+
+doc.recompute()
+FreeCADGui.activeDocument().activeView().viewIsometric()
+FreeCADGui.SendMsgToActiveView("ViewFit")
+doc.saveAs(os.path.expanduser("~/monopoly_square_tile.FCStd"))
+print("✅ PropertySquare (puzzle bağlantılı) oluşturuldu.")
