@@ -1,19 +1,16 @@
 # =============================================================
-# MONOPOLY TÜRKİYE - Taban Plakalar
+# MONOPOLY TÜRKİYE - Taban Plakalar (Merkez Dolgu)
 # FlashForge AD5X — Max baskı alanı: 220x220x220mm
 #
-# Tasarım: Düz plaka — tile'lar üstüne oturur
-#   - Uzun kenarlarda 2mm yüksek yönlendirme çıkıntısı
-#   - Uçlar açık — tile puzzle tabları komşu plakaları ve köşeleri kilitler
+# Tahtanın iç 400×400mm alanı 4 adet 200×200mm plaka ile doldurulur.
+# Tile'lar birbirine puzzle tab ile bağlanır; plakalar içten destek sağlar.
 #
-# TOPLAM: 4 kenar plakası + 4 köşe plakası = 8 parça
-# Her kenar plakası 2 baskı parçasına bölünmüş (220mm sınırı nedeniyle)
-# → Bölünmüş parçalar yapıştırılarak kenar plakası oluşturulur
+# Tahta iç alan hesabı:
+#   Dış kenar    : 480mm (60mm köşe + 9×40mm tile + 60mm köşe)
+#   Tile derinlik: 40mm
+#   İç alan      : 480 - 2×40 = 400mm → 4 adet 200×200mm plaka ✓
 #
-# Baskı listesi:
-#   KenarPlaka_Parca_A  (4 tile = 160mm): 4 adet
-#   KenarPlaka_Parca_B  (5 tile = 200mm): 4 adet
-#   KosePlaka                     (60mm): 4 adet
+# Baskı: 4 adet 200×200×3mm — hepsi 220×220mm alana sığar
 # =============================================================
 
 import FreeCAD
@@ -23,102 +20,41 @@ import os
 
 doc = FreeCAD.newDocument("MonopolyTabanPlaka")
 
-# --- Tile boyutları ---
-TILE_W   = 40.0   # normal kare (40×40mm)
-CORNER_W = 60.0   # köşe kare (60×60mm)
+# --- Plaka boyutları ---
+PLATE_SIZE = 200.0   # her plaka 200×200mm
+PLATE_H    =   3.0   # plaka kalınlığı
+TOL        =   0.3   # plakalar arası boşluk (2 plaka yan yana: 0.15mm her tarafta)
 
-# --- Plaka parametreleri ---
-MARG     = 2.0    # tile kenarından plaka taşması (her yanda)
-BASE_H   = 3.0    # plaka kalınlığı
-LIP_H    = 2.0    # uzun kenar çıkıntısı — tile Y yönünde kaymaz
-LIP_T    = 2.0    # çıkıntı kalınlığı
+# 4 plaka 2×2 dizilimde → toplam 400×400mm
+# Görsel yerleşimde yan yana gösterilir (basım için biri seçilir)
 
-# Plaka iç genişliği (tile + 2 kenar payı)
-PLATE_W  = TILE_W + 2 * MARG          # 44 mm
-TOL      = 0.2    # bölme ek toleransı (yapıştırma örtüşmesi)
+GAP = 20  # FreeCAD görüntüsünde plakalar arası boşluk
 
+for row in range(2):
+    for col in range(2):
+        idx = row * 2 + col + 1
 
-def make_plate_segment(num_tiles, x_off=0, y_off=0):
-    """
-    Düz kenar plaka segmenti. Her iki uç açık — tile puzzle tabları
-    segmentleri ve köşe plakalarını birbirine kilitler.
+        plate = Part.makeBox(PLATE_SIZE - TOL, PLATE_SIZE - TOL, PLATE_H)
+        plate.translate(FreeCAD.Vector(
+            col * (PLATE_SIZE + GAP),
+            row * (PLATE_SIZE + GAP),
+            0
+        ))
 
-    num_tiles : bu segmentteki tile sayısı (4 → 160mm, 5 → 200mm)
-    """
-    length = num_tiles * TILE_W       # 160 veya 200 mm
-
-    # Ana düz plaka tabanı
-    base = Part.makeBox(length, PLATE_W, BASE_H)
-
-    # Ön çıkıntı (y=0 — oyunculara bakan kenar)
-    lip_front = Part.makeBox(length, LIP_T, BASE_H + LIP_H)
-
-    # Arka çıkıntı (y=PLATE_W — tahta merkezine bakan kenar)
-    lip_back = Part.makeBox(length, LIP_T, BASE_H + LIP_H)
-    lip_back.translate(FreeCAD.Vector(0, PLATE_W - LIP_T, 0))
-
-    plate = base.fuse(lip_front).fuse(lip_back)
-    plate.translate(FreeCAD.Vector(x_off, y_off, 0))
-    return plate
-
-
-def make_corner_plate(x_off=0, y_off=0):
-    """
-    Köşe kare için düz plaka. Tüm 4 köşe için identical — montajda döndürülür.
-    Düz yüzey, puzzle tabları her yönde serbestçe geçer.
-    """
-    size = CORNER_W + 2 * MARG   # 64 mm
-    plate = Part.makeBox(size, size, BASE_H)
-    plate.translate(FreeCAD.Vector(x_off, y_off, 0))
-    return plate
-
-
-# =============================================================
-# Parçaları oluştur — FreeCAD görüntüsü için yan yana dizilmiş
-# Baskı için: her parçayı ayrı ayrı seçip .stl / .3mf export et
-# =============================================================
-
-GAP = 15   # görsel aralık
-
-# --- Parça A: 4 tile = 160mm --- (4 adet, bir kenar plakasının sol yarısı)
-seg_a_len = 4 * TILE_W     # 160 mm
-for i in range(4):
-    p = make_plate_segment(4, x_off=i * (seg_a_len + GAP), y_off=0)
-    obj = doc.addObject("Part::Feature", f"KenarPlaka_ParcaA_{i+1}")
-    obj.Shape = p
-    obj.ViewObject.ShapeColor  = (0.85, 0.72, 0.52)
-    obj.ViewObject.DisplayMode = "Shaded"
-
-# --- Parça B: 5 tile = 200mm --- (4 adet, bir kenar plakasının sağ yarısı)
-seg_b_len = 5 * TILE_W     # 200 mm
-y2 = PLATE_W + GAP
-for i in range(4):
-    p = make_plate_segment(5, x_off=i * (seg_b_len + GAP), y_off=y2)
-    obj = doc.addObject("Part::Feature", f"KenarPlaka_ParcaB_{i+1}")
-    obj.Shape = p
-    obj.ViewObject.ShapeColor  = (0.72, 0.55, 0.33)
-    obj.ViewObject.DisplayMode = "Shaded"
-
-# --- Köşe plakası: 64×64mm --- (4 adet)
-corner_size = CORNER_W + 2 * MARG  # 64 mm
-y3 = 2 * (PLATE_W + GAP)
-for i in range(4):
-    p = make_corner_plate(x_off=i * (corner_size + GAP), y_off=y3)
-    obj = doc.addObject("Part::Feature", f"KosePlaka_{i+1}")
-    obj.Shape = p
-    obj.ViewObject.ShapeColor  = (0.55, 0.38, 0.18)
-    obj.ViewObject.DisplayMode = "Shaded"
+        obj = doc.addObject("Part::Feature", f"TabanPlaka_{idx}")
+        obj.Shape = plate
+        obj.ViewObject.ShapeColor  = (0.85, 0.72, 0.52)
+        obj.ViewObject.DisplayMode = "Shaded"
 
 doc.recompute()
 FreeCADGui.activeDocument().activeView().viewIsometric()
 FreeCADGui.SendMsgToActiveView("ViewFit")
 doc.saveAs(os.path.expanduser("~/monopoly_taban_plaka.FCStd"))
 
-print("✅ Taban plakalar oluşturuldu:")
-print(f"   Kenar Plaka Parça A (4 tile = {seg_a_len:.0f}mm): 4 adet → {seg_a_len:.0f}×{PLATE_W:.0f}×{BASE_H+LIP_H:.0f}mm")
-print(f"   Kenar Plaka Parça B (5 tile = {seg_b_len:.0f}mm): 4 adet → {seg_b_len:.0f}×{PLATE_W:.0f}×{BASE_H+LIP_H:.0f}mm")
-print(f"   Köşe Plaka                      : 4 adet → {corner_size:.0f}×{corner_size:.0f}×{BASE_H:.0f}mm")
+print("✅ Taban plakalar oluşturuldu: 4 adet 199.7×199.7×3mm")
+print("   2×2 dizilimde → toplam 400×400mm iç alan")
+print("   Her biri 220×220mm yazıcı alanına sığar.")
 print()
 print("Montaj:")
-print("  [KosePlaka] + [ParcaA(160mm)] + [ParcaB(200mm)] + [KosePlaka]")
-print("  A+B yapıştırılarak 1 kenar plakası (360mm) oluşturulur → 4 kenar plakası")
+print("   Tile çerçevesini (40 tile) önce birbirine bağla.")
+print("   4 plakayı iç alana yan yana yerleştir.")
