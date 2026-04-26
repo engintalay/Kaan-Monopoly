@@ -8,7 +8,8 @@ from PIL import Image
 from pathlib import Path
 
 COLS, ROWS = 5, 6
-TEXT_HEIGHT = 22  # Alt yazı yüksekliği (piksel)
+TOP_TRIM = 5     # Üstten kırpma (önceki satırın yazısı)
+BOTTOM_TRIM = 25  # Alttan kırpma (kendi yazısı)
 
 NAMES = [
     # Satır 1
@@ -40,8 +41,10 @@ def main():
             idx = row * COLS + col
             left = col * cell_w
             top = row * cell_h
-            # Alt yazıyı kırp
-            crop = img.crop((left, top, left + cell_w, top + cell_h - TEXT_HEIGHT))
+            # Üstten ve alttan yazı alanını kırp
+            crop_top = top + (TOP_TRIM if row > 0 else 0)
+            crop_bottom = top + cell_h - BOTTOM_TRIM
+            crop = img.crop((left, crop_top, left + cell_w, crop_bottom))
 
             name = NAMES[idx]
             out_path = output_dir / f"{name}.png"
