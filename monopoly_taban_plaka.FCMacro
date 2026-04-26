@@ -1,26 +1,22 @@
 # =============================================================
-# MONOPOLY TÜRKİYE - L-Şekilli Taban Plakalar
+# MONOPOLY TÜRKİYE - Taban Plakalar
 # FlashForge AD5X — Max baskı alanı: 220x220x220mm
 #
-# 4 adet identical L-plaka — her köşeye 1 adet, 90° döndürerek
+# TOPLAM 8 PARÇA:
+#   4 × L-Plaka   (220×220mm) — köşelere, tile'ların altına
+#   4 × İç Dolgu  (200×200mm) — tahtanın iç 400×400mm alanını doldurur
 #
-# Her L-plaka taşır:
-#   1 köşe tile (60×60mm)
-#   4 kol-A tile (yatay) × 40mm = 160mm
-#   4 kol-B tile (dikey)  × 40mm = 160mm
-#   → toplam 9 tile / plaka
+# Tahta iç alan: 480mm - 2×40mm (tile) = 400mm → 2×200mm ✓
 #
-# 9. tile (her kenar ortası): puzzle tab ile iki plaka arasında köprü yapar
-# 4 L × 9 tile + 4 orta = 40 tile (tam tahta çevresi)
+# L-Plaka içeriği (per köşe):
+#   1 köşe tile (60×60) + 4 kol-A tile + 4 kol-B tile = 9 tile
+# Kenar ortasındaki 9. tile: puzzle tab ile iki L-plaka arasında köprü
 #
-# L-plaka boyutu: 220×220×3mm — baskı alanına tam sığar
-# 4 kopya bas; montajda her birini 90° döndür
-#
-# Montaj sırası:
-#   1. 4 L-plakayı köşelere yerleştir
-#   2. Köşe tile'ı köşeye, kol tile'larını kollara yerleştir
-#      (her tile puzzle tab ile bitişiğine kilitlenir)
-#   3. Her kenar ortasındaki 9. tile'ı son olarak ekle
+# Montaj:
+#   1. 4 L-plakayı köşelere yerleştir (90°'lik artışlarla döndür)
+#   2. 4 iç dolgu plakayı aralarındaki 400×400mm alana yerleştir
+#   3. Tile'ları L-plakaların üstüne, puzzle tab ile bağlayarak ekle
+#   4. Kenar ortasındaki 9. tile'ları en son tak
 # =============================================================
 
 import FreeCAD
@@ -30,66 +26,95 @@ import os
 
 doc = FreeCAD.newDocument("MonopolyTabanPlaka")
 
-TILE_W   = 40.0   # normal tile genişliği (40×40mm kare)
-CORNER_W = 60.0   # köşe tile genişliği (60×60mm kare)
-N_TILES  = 4      # her kolda tile sayısı
+# --- Boyutlar ---
+TILE_W   = 40.0   # normal tile
+CORNER_W = 60.0   # köşe tile
+N_TILES  = 4      # her kolda tile sayısı (4×40=160mm)
 BASE_H   = 3.0    # plaka kalınlığı
 
-ARM_L  = N_TILES * TILE_W   # 4×40 = 160mm
-TOTAL  = CORNER_W + ARM_L   # 60+160 = 220mm → baskı alanına tam sığar
+ARM_L    = N_TILES * TILE_W   # 160mm
+L_SIZE   = CORNER_W + ARM_L  # 220mm — baskı alanına tam sığar
+
+# İç dolgu: tile iç yüzleri arası mesafe = 480 - 2×40 = 400mm → 2×200mm
+FILL_SIZE = 200.0
+FILL_TOL  = 0.3   # plakalar arası ince boşluk
 
 
+# ─────────────────────────────────────────────────────
+# L-PLAKA (köşe + iki kol)
+# ─────────────────────────────────────────────────────
 def make_L_plate():
     """
-    Düz L-şekilli taban plaka — 220×220×3mm.
+    220×220×3mm L-şekilli taban plaka.
     Köşe bölgesi (60×60) + yatay kol (160×40) + dikey kol (40×160).
-    Tile'lar plakanın ÜSTÜNE yerleştirilir; puzzle tabları birbirine kilitler.
+    4 kopya bas — her köşede 90° döndürerek kullan.
     """
-    # Köşe bölgesi
     corner = Part.makeBox(CORNER_W, CORNER_W, BASE_H)
 
-    # Yatay kol (Kol-A): köşenin sağına uzanır
     arm_a = Part.makeBox(ARM_L, TILE_W, BASE_H)
     arm_a.translate(FreeCAD.Vector(CORNER_W, 0, 0))
 
-    # Dikey kol (Kol-B): köşenin üstüne uzanır
     arm_b = Part.makeBox(TILE_W, ARM_L, BASE_H)
     arm_b.translate(FreeCAD.Vector(0, CORNER_W, 0))
 
     return corner.fuse(arm_a).fuse(arm_b)
 
 
-# =============================================================
-# 4 plakanın döndürülmüş hali — görsel yerleşim
-# Her kopya aynı STL; slicer'da 0° / 90° / 180° / 270° döndürülür
-# =============================================================
+# ─────────────────────────────────────────────────────
+# İÇ DOLGU PLAKASI (merkez alan)
+# ─────────────────────────────────────────────────────
+def make_fill_plate():
+    """
+    200×200×3mm düz dolgu plakası.
+    4 adet 2×2 dizilimde → toplam 400×400mm iç alan.
+    """
+    return Part.makeBox(FILL_SIZE - FILL_TOL, FILL_SIZE - FILL_TOL, BASE_H)
 
-GAP = 30   # FreeCAD görünümündeki plakalar arası boşluk
-cx = cy = TOTAL / 2   # döndürme merkezi
 
-corners = [
-    ("L_Plaka_1_AltSol",  0,   (0.85, 0.72, 0.52)),
-    ("L_Plaka_2_AltSag",  90,  (0.72, 0.55, 0.33)),
-    ("L_Plaka_3_UstSag",  180, (0.60, 0.42, 0.22)),
-    ("L_Plaka_4_UstSol",  270, (0.50, 0.33, 0.14)),
+# ─────────────────────────────────────────────────────
+# PARÇALARI OLUŞTUR
+# ─────────────────────────────────────────────────────
+GAP = 25   # FreeCAD görünüm aralığı
+
+# --- 4 × L-Plaka (döndürülmüş) ---
+cx = cy = L_SIZE / 2
+L_configs = [
+    ("L_Plaka_1_AltSol",  0,   (0.80, 0.65, 0.45)),
+    ("L_Plaka_2_AltSag",  90,  (0.80, 0.65, 0.45)),
+    ("L_Plaka_3_UstSag",  180, (0.80, 0.65, 0.45)),
+    ("L_Plaka_4_UstSol",  270, (0.80, 0.65, 0.45)),
 ]
 
-for i, (label, deg, color) in enumerate(corners):
+for i, (label, deg, color) in enumerate(L_configs):
     plate = make_L_plate()
-
     if deg != 0:
-        plate.rotate(
-            FreeCAD.Vector(cx, cy, 0),
-            FreeCAD.Vector(0, 0, 1),
-            deg
-        )
-
-    # Yan yana diz
-    plate.translate(FreeCAD.Vector(i * (TOTAL + GAP), 0, 0))
+        plate.rotate(FreeCAD.Vector(cx, cy, 0), FreeCAD.Vector(0, 0, 1), deg)
+    plate.translate(FreeCAD.Vector(i * (L_SIZE + GAP), 0, 0))
 
     obj = doc.addObject("Part::Feature", label)
     obj.Shape = plate
     obj.ViewObject.ShapeColor  = color
+    obj.ViewObject.DisplayMode = "Shaded"
+
+# --- 4 × İç Dolgu Plakası (2×2 dizilim) ---
+fill_configs = [
+    ("Dolgu_1_AltSol", 0, 0),
+    ("Dolgu_2_AltSag", 1, 0),
+    ("Dolgu_3_UstSol", 0, 1),
+    ("Dolgu_4_UstSag", 1, 1),
+]
+
+fill_y_off = L_SIZE + GAP   # L-plakalar altına, dolgular üstüne
+for label, col, row in fill_configs:
+    plate = make_fill_plate()
+    plate.translate(FreeCAD.Vector(
+        col * (FILL_SIZE + GAP),
+        fill_y_off + row * (FILL_SIZE + GAP),
+        0
+    ))
+    obj = doc.addObject("Part::Feature", label)
+    obj.Shape = plate
+    obj.ViewObject.ShapeColor  = (0.60, 0.48, 0.30)
     obj.ViewObject.DisplayMode = "Shaded"
 
 doc.recompute()
@@ -97,17 +122,19 @@ FreeCADGui.activeDocument().activeView().viewIsometric()
 FreeCADGui.SendMsgToActiveView("ViewFit")
 doc.saveAs(os.path.expanduser("~/monopoly_taban_plaka.FCStd"))
 
-print("✅ L-Şekilli taban plakalar oluşturuldu (4 adet — aynı STL, 4 kopya bas):")
-print(f"   Boyut : {TOTAL:.0f} × {TOTAL:.0f} × {BASE_H:.0f} mm")
-print(f"   Her L : 1 köşe tile + {N_TILES} kol-A tile + {N_TILES} kol-B tile = {1+2*N_TILES} tile")
-print(f"   4 L + 4 orta tile = {4*(1+2*N_TILES)+4} tile (tam çevre) ✓")
+print("✅ Taban plakalar oluşturuldu — toplam 8 parça:")
+print(f"   L-Plaka  × 4 : {L_SIZE:.0f}×{L_SIZE:.0f}×{BASE_H:.0f}mm  (aynı STL, 4 kopya bas)")
+print(f"   İç Dolgu × 4 : {FILL_SIZE:.0f}×{FILL_SIZE:.0f}×{BASE_H:.0f}mm  (aynı STL, 4 kopya bas)")
 print()
-print("Montaj:")
-print("  AltSol (0°)  → GO köşesi")
-print("  AltSag (90°) → Hapis köşesi")
-print("  UstSag(180°) → Ücretsiz Park köşesi")
-print("  UstSol(270°) → Hapse Git köşesi")
-print()
-print("  1. 4 plakayı köşelere yerleştir (90°'lik artışlarla döndür)")
-print("  2. Tile'ları plaka üstüne koy, puzzle tab ile birleştir")
-print("  3. Her kenar ortasındaki 9. tile'ı en son tak")
+print("Yerleşim:")
+print("  ┌────────────────────────────────────────┐")
+print("  │ [L-AltSol] tile─tile─9─tile─tile [L-AltSag] │")
+print("  │    t  ┌─────────────┬─────────────┐ t │")
+print("  │    i  │  Dolgu-3   │  Dolgu-4   │ i │")
+print("  │    l  │  200×200   │  200×200   │ l │")
+print("  │    e  ├─────────────┼─────────────┤ e │")
+print("  │       │  Dolgu-1   │  Dolgu-2   │   │")
+print("  │    t  │  200×200   │  200×200   │ t │")
+print("  │    i  └─────────────┴─────────────┘ i │")
+print("  │ [L-UstSol] tile─tile─9─tile─tile [L-UstSag] │")
+print("  └────────────────────────────────────────┘")
