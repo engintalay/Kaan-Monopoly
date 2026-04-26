@@ -231,5 +231,22 @@
         }
       ]
     }
-  }
+  },
+
+  "ulasim": [
+    { "ad": "Doğu Ekspresi", "Fiyat": 200, "kira": [25, 50, 100, 200] },
+    { "ad": "Orient Express", "Fiyat": 200, "kira": [25, 50, 100, 200] },
+    { "ad": "Hicaz Demiryolu", "Fiyat": 200, "kira": [25, 50, 100, 200] },
+    { "ad": "Bağdat Demiryolu", "Fiyat": 200, "kira": [25, 50, 100, 200] }
+  ],
+
+  "utility": [
+    { "ad": "ASKİ", "Fiyat": 150, "kira_carpan": [4, 10] },
+    { "ad": "TEDAŞ", "Fiyat": 150, "kira_carpan": [4, 10] }
+  ],
+
+  "vergiler": [
+    { "ad": "ÖTV", "ucret": 200 },
+    { "ad": "KDV", "ucret": 100 }
+  ]
 }

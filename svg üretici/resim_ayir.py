@@ -1,42 +1,53 @@
 #!/usr/bin/env python3
 """
-Büyük resmi 4x5 grid olarak 20 ayrı resme böler.
+Büyük resmi 6x5 grid olarak 30 ayrı resme böler.
+Alt kısımdaki yazı alanını kırpar.
 """
 
 from PIL import Image
 from pathlib import Path
 
-COLS, ROWS = 5, 4
+COLS, ROWS = 5, 6
+TEXT_HEIGHT = 22  # Alt yazı yüksekliği (piksel)
 
 NAMES = [
-    "Kapadokya", "Hattuşaş", "Anıtkabir", "Dolmabahçe Sarayı", "Ayasofya",
-    "Topkapı Sarayı", "Sümela Manastırı", "Sultanahmet Camii", "Süleymaniye Camii", "Selimiye Camii",
-    "Pamukkale", "Safranbolu Evleri", "Galata Kulesi", "Truva Antik Kenti", "Aspendos Tiyatrosu",
-    "Perge Antik Kenti", "Efes Antik Kenti", "Afrodisias", "Bergama Antik Kenti", "Nemrut Dağı",
+    # Satır 1
+    "Kapadokya", "Hattuşaş", "Uzungöl", "Salda Gölü", "Abant Gölü",
+    # Satır 2
+    "Efes Antik Kenti", "Afrodisias", "Bergama", "Truva Antik Kenti", "Aspendos Tiyatrosu",
+    # Satır 3
+    "Perge Antik Kenti", "Pamukkale Travertenleri", "Safranbolu Evleri", "Galata Kulesi", "Sultanahmet Camii",
+    # Satır 4
+    "Süleymaniye Camii", "Selimiye Camii", "Ayasofya", "Topkapı Sarayı", "Sümela Manastırı",
+    # Satır 5
+    "Anıtkabir", "Dolmabahçe Sarayı", "Doğu Ekspresi", "Orient Express", "Hicaz Demiryolu",
+    # Satır 6
+    "Bağdat Demiryolu", "ASKİ", "TEDAŞ", "ÖTV", "KDV",
 ]
 
 def main():
     script_dir = Path(__file__).parent.resolve()
-    img = Image.open(script_dir / "1a3e34f9-5085-4285-8b8b-1df1d9057def.png")
-    
+    img = Image.open(script_dir / "9c184e20-7f2b-49f7-99c6-3b02b6a4c713.png")
+
     w, h = img.size
     cell_w, cell_h = w // COLS, h // ROWS
-    
+
     output_dir = script_dir / "mulk_resimleri"
     output_dir.mkdir(exist_ok=True)
-    
+
     for row in range(ROWS):
         for col in range(COLS):
             idx = row * COLS + col
             left = col * cell_w
             top = row * cell_h
-            crop = img.crop((left, top, left + cell_w, top + cell_h))
-            
+            # Alt yazıyı kırp
+            crop = img.crop((left, top, left + cell_w, top + cell_h - TEXT_HEIGHT))
+
             name = NAMES[idx]
             out_path = output_dir / f"{name}.png"
             crop.save(out_path)
-            print(f"[{idx+1}/20] {name}.png")
-    
+            print(f"[{idx+1}/30] {name}.png ({crop.size[0]}x{crop.size[1]})")
+
     print("\nTüm resimler ayrıldı!")
 
 if __name__ == "__main__":
