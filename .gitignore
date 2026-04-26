@@ -9,6 +9,8 @@
 # 3D baskı çıktıları (kaynak makrolardan üretilir)
 *.stl
 *.obj
+# 3D oyun STL dosyalarını dahil et
+!svg üretici/3D oyun/*.stl
 
 # Sistem
 .DS_Store
