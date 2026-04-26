@@ -5,19 +5,13 @@
 # FreeCad Macro - Macro > Execute Macro ile çalıştırın
 # =============================================================
 
-import FreeCAD, Part, FreeCADGui, Draft, os
+import FreeCAD, Part, FreeCADGui, os
 
 W, D, H  = 40.0, 40.0, 4.0
 NECK_W  = 8.0
 NECK_D  = 5.0
 HEAD_R  = 5.5
 TAB_TOL = 0.2
-
-FONT = next((f for f in [
-    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-    "/usr/share/fonts/dejavu/DejaVuSans.ttf",
-    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
-] if os.path.exists(f)), "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
 
 OZEL_KARELER = [
     {"name": "Sans_1",        "label": "Şans",          "color": (1.0, 0.65, 0.0)},
@@ -55,29 +49,9 @@ def make_tile_shape():
     return base.fuse(tab).cut(blank)
 
 
-def add_embossed_text(tile_shape, text, size=3.5):
-    try:
-        ss = Draft.makeShapeString(String=text, FontFile=FONT, Size=size, Tracking=0.05)
-        doc.recompute()
-        if ss is None or ss.Shape.isNull():
-            return tile_shape
-        solid = ss.Shape.extrude(FreeCAD.Vector(0, 0, 0.6))
-        bb    = solid.BoundBox
-        cx    = max(1.0, (W - bb.XLength) / 2)
-        cy    = 2.0  # alta yaz, bağlantı oyuğundan uzak
-        solid.translate(FreeCAD.Vector(cx, cy, H))
-        doc.removeObject(ss.Name)
-        return tile_shape.fuse(solid)
-    except Exception as e:
-        print(f"Metin eklenemedi: {e}")
-        return tile_shape
-
-
 COLS = 5  # Her satırda 5 kare
 for i, kare in enumerate(OZEL_KARELER):
     tile = make_tile_shape()
-    text_size = 3.5 if len(kare["label"]) <= 12 else 2.8
-    tile = add_embossed_text(tile, kare["label"], size=text_size)
 
     row = i // COLS
     col = i % COLS

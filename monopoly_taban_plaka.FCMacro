@@ -1,0 +1,132 @@
+# =============================================================
+# MONOPOLY TÜRKİYE - Taban Plaka Rayları
+# FlashForge AD5X — Max baskı alanı: 220x220x220mm
+#
+# Kanal (U-profil) tasarımı:
+#   Dış duvar + İç duvar + Alt taban
+#   Her iki uç AÇIK — tile puzzle tabları segmentleri birbirine kilitler
+#   Köşe tablası: düz plaka (tile puzzle tabları köşe bağlantısını sağlar)
+#
+# Parçalar (12 adet):
+#   - Kenar Rayı Kısa (4 kare = 160mm): 4 adet → 160×47×8mm
+#   - Kenar Rayı Uzun (5 kare = 200mm): 4 adet → 200×47×8mm
+#   - Köşe Tablası    (1 köşe kare)   : 4 adet →  66×66×3mm
+#
+# Montaj sırası (kenar başına):
+#   [Köşe Plaka + Köşe Tile] ← [Ray Kısa + Tile×4] ← [Ray Uzun + Tile×5] ← [Köşe]
+# =============================================================
+
+import FreeCAD
+import Part
+import FreeCADGui
+import os
+
+doc = FreeCAD.newDocument("MonopolyTabanPlaka")
+
+# --- Tile boyutları ---
+TILE_W   = 40.0   # normal kare (her yön)
+CORNER_W = 60.0   # köşe kare (her yön)
+TILE_H   = 4.0    # tile yüksekliği
+
+# --- Ray profil parametreleri ---
+WALL_T   = 3.0    # duvar kalınlığı
+BASE_H   = 3.0    # taban plaka kalınlığı
+WALL_H   = 5.0    # duvar yüksekliği — tile 4mm + 1mm güvenlik payı
+CHAN_TOL = 0.3    # kanal genişlik toleransı
+
+# Kanal iç genişliği (tile derinliği + tolerans)
+CHAN_W   = TILE_W + CHAN_TOL          # 40.3 mm
+# Ray toplam dış genişliği
+RAIL_OW  = CHAN_W + 2 * WALL_T       # ~46.3 mm ≈ 47 mm
+
+
+def make_rail(num_tiles, x_off=0, y_off=0):
+    """
+    U-kanal ray segmenti. Her iki uç açık — tile puzzle tabları
+    komşu segmentleri ve köşe tablalarını kilitler.
+
+    num_tiles: bu segmentte kaç normal tile taşınacak (4 veya 5)
+    """
+    length = num_tiles * TILE_W
+
+    # Alt taban
+    base = Part.makeBox(length, RAIL_OW, BASE_H)
+
+    # Dış duvar (y=0, oyunculara bakan yüz)
+    wall_out = Part.makeBox(length, WALL_T, BASE_H + WALL_H)
+
+    # İç duvar (y=RAIL_OW−WALL_T, tahta merkezine bakan yüz)
+    wall_in = Part.makeBox(length, WALL_T, BASE_H + WALL_H)
+    wall_in.translate(FreeCAD.Vector(0, RAIL_OW - WALL_T, 0))
+
+    rail = base.fuse(wall_out).fuse(wall_in)
+    rail.translate(FreeCAD.Vector(x_off, y_off, 0))
+    return rail
+
+
+def make_corner_plate(x_off=0, y_off=0):
+    """
+    Köşe kare için düz taban plakası.
+    Duvar yok — puzzle tabları her yönde serbestçe geçer.
+    Tüm 4 köşe için aynı parça; montajda uygun yöne döndürülür.
+    """
+    # Köşe tile etrafında WALL_T kadar boşluk bırak (ray duvarıyla hizalanma)
+    size = CORNER_W + 2 * WALL_T    # 66 mm
+    plate = Part.makeBox(size, size, BASE_H)
+    plate.translate(FreeCAD.Vector(x_off, y_off, 0))
+    return plate
+
+
+# =============================================================
+# Tüm parçaları oluştur
+# Yerleşim: FreeCAD görselleştirme için yan yana
+# Basım: her parçayı ayrı ayrı export et
+# =============================================================
+
+SPACING = 20  # görsel aralık
+
+# --- Kenar Rayı Kısa (4 tile × 40mm = 160mm) × 4 adet ---
+short_tiles  = 4
+short_length = short_tiles * TILE_W  # 160 mm
+for i in range(4):
+    rail = make_rail(short_tiles, x_off=i * (short_length + SPACING), y_off=0)
+    obj  = doc.addObject("Part::Feature", f"RayKisa_{i+1}")
+    obj.Shape = rail
+    obj.ViewObject.ShapeColor  = (0.76, 0.60, 0.42)
+    obj.ViewObject.DisplayMode = "Shaded"
+
+# --- Kenar Rayı Uzun (5 tile × 40mm = 200mm) × 4 adet ---
+long_tiles  = 5
+long_length = long_tiles * TILE_W   # 200 mm
+y2 = RAIL_OW + SPACING
+for i in range(4):
+    rail = make_rail(long_tiles, x_off=i * (long_length + SPACING), y_off=y2)
+    obj  = doc.addObject("Part::Feature", f"RayUzun_{i+1}")
+    obj.Shape = rail
+    obj.ViewObject.ShapeColor  = (0.60, 0.42, 0.22)
+    obj.ViewObject.DisplayMode = "Shaded"
+
+# --- Köşe Tablası × 4 adet ---
+corner_size = CORNER_W + 2 * WALL_T  # 66 mm
+y3 = 2 * (RAIL_OW + SPACING)
+for i in range(4):
+    plate = make_corner_plate(x_off=i * (corner_size + SPACING), y_off=y3)
+    obj   = doc.addObject("Part::Feature", f"KoseTabla_{i+1}")
+    obj.Shape = plate
+    obj.ViewObject.ShapeColor  = (0.45, 0.28, 0.10)
+    obj.ViewObject.DisplayMode = "Shaded"
+
+doc.recompute()
+FreeCADGui.activeDocument().activeView().viewIsometric()
+FreeCADGui.SendMsgToActiveView("ViewFit")
+doc.saveAs(os.path.expanduser("~/monopoly_taban_plaka.FCStd"))
+
+print("✅ Taban plaka oluşturuldu (12 parça — hepsi 220×220mm alanına sığar):")
+print(f"   Ray Kısa  ({short_tiles} tile = {short_length:.0f}mm): 4 adet "
+      f"→ {short_length:.0f} × {RAIL_OW:.0f} × {BASE_H+WALL_H:.0f} mm")
+print(f"   Ray Uzun  ({long_tiles} tile = {long_length:.0f}mm): 4 adet "
+      f"→ {long_length:.0f} × {RAIL_OW:.0f} × {BASE_H+WALL_H:.0f} mm")
+print(f"   Köşe Tabla: 4 adet → {corner_size:.0f} × {corner_size:.0f} × {BASE_H:.0f} mm")
+print()
+print("Montaj: Tile puzzle tabları ray segmentlerini ve köşeleri birbirine kilitler.")
+print("Her 4 köşe tablası identiktir — montajda uygun yöne döndürülür.")

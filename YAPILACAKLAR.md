@@ -17,6 +17,8 @@
 - [x] `monopoly_istasyonlar.FCMacro` — puzzle bağlantı sistemi
 - [x] `monopoly_ozel_kareler.FCMacro` — puzzle bağlantı sistemi
 - [x] `CLAUDE.md` ve `YAPILACAKLAR.md` oluşturuldu
+- [x] Tüm makrolardan kabartma metin kaldırıldı (Draft/FONT/add_embossed_text) — üstüne kağıt yapıştırılacak
+- [x] `monopoly_taban_plaka.FCMacro` — FlashForge AD5X (220×220mm) uyumlu 12 parça ray sistemi
 
 ---
 
@@ -42,12 +44,13 @@
 
 ## Teknik Notlar
 
-- Her makro `Draft.makeShapeString()` ile kabartma Türkçe isim ekler
-- Font: `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf` (Türkçe karakter desteği)
-- Metin boyutu: 3.5 mm (uzun isimler için 2.5 mm)
+- Tüm tile yüzeyleri düz — üstüne kağıt etiket yapıştırılacak (Draft/metin kodu kaldırıldı)
 - Mülk değerleri tarihi/kültürel öneme + UNESCO statüsüne göre ölçeklendi
-- `make_tile_shape()` fonksiyonu mevcut düzeltilmiş `monopoly_square_tile.FCMacro` geometrisini kullanır
+- `make_tile_shape()` fonksiyonu puzzle bağlantılı tile geometrisini üretir
 - İstasyonlar ve özel kareler: renk şeridi yok, düz taban
+- Taban plaka: U-kanal ray sistemi, tile puzzle tabları segmentleri birbirine kilitler
+- Köşe tablası: düz plaka (4 köşe için identical, montajda döndürülür)
+- Basım: Ray Kısa 160×47×8mm, Ray Uzun 200×47×8mm, Köşe 66×66×3mm — hepsi 220mm'e sığar
 
 ---
 
