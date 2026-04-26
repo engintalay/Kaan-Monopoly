@@ -1,0 +1,235 @@
+{
+  "arsa": {
+    "kahverengi": {
+      "renk_kodu": "#8B4513",
+      "grup_adi": "Kahverengi",
+      "mulkler": [
+        {
+          "ad": "Kapadokya",
+          "Fiyat": 60,
+          "kira": [2, 10, 30, 90, 160, 250],
+          "ev_maliyeti": 50,
+          "otel_maliyeti": 50,
+          "ipotek": 30
+        },
+        {
+          "ad": "Hattuşaş",
+          "Fiyat": 60,
+          "kira": [4, 20, 60, 180, 320, 450],
+          "ev_maliyeti": 50,
+          "otel_maliyeti": 50,
+          "ipotek": 30
+        }
+      ]
+    },
+
+    "acik_mavi": {
+      "renk_kodu": "#87CEEB",
+      "grup_adi": "Açık Mavi",
+      "mulkler": [
+        {
+          "ad": "Uzungöl",
+          "Fiyat": 100,
+          "kira": [6, 30, 90, 270, 400, 550],
+          "ev_maliyeti": 50,
+          "otel_maliyeti": 50,
+          "ipotek": 50
+        },
+        {
+          "ad": "Salda Gölü",
+          "Fiyat": 100,
+          "kira": [6, 30, 90, 270, 400, 550],
+          "ev_maliyeti": 50,
+          "otel_maliyeti": 50,
+          "ipotek": 50
+        },
+        {
+          "ad": "Abant Gölü",
+          "Fiyat": 120,
+          "kira": [8, 40, 100, 300, 450, 600],
+          "ev_maliyeti": 50,
+          "otel_maliyeti": 50,
+          "ipotek": 60
+        }
+      ]
+    },
+
+    "pembe": {
+      "renk_kodu": "#FF69B4",
+      "grup_adi": "Pembe",
+      "mulkler": [
+        {
+          "ad": "Efes Antik Kenti",
+          "Fiyat": 140,
+          "kira": [10, 50, 150, 450, 625, 750],
+          "ev_maliyeti": 100,
+          "otel_maliyeti": 100,
+          "ipotek": 70
+        },
+        {
+          "ad": "Afrodisias",
+          "Fiyat": 140,
+          "kira": [10, 50, 150, 450, 625, 750],
+          "ev_maliyeti": 100,
+          "otel_maliyeti": 100,
+          "ipotek": 70
+        },
+        {
+          "ad": "Bergama",
+          "Fiyat": 160,
+          "kira": [12, 60, 180, 500, 700, 900],
+          "ev_maliyeti": 100,
+          "otel_maliyeti": 100,
+          "ipotek": 80
+        }
+      ]
+    },
+
+    "turuncu": {
+      "renk_kodu": "#FFA500",
+      "grup_adi": "Turuncu",
+      "mulkler": [
+        {
+          "ad": "Truva Antik Kenti",
+          "Fiyat": 180,
+          "kira": [14, 70, 200, 550, 750, 950],
+          "ev_maliyeti": 100,
+          "otel_maliyeti": 100,
+          "ipotek": 90
+        },
+        {
+          "ad": "Aspendos Tiyatrosu",
+          "Fiyat": 180,
+          "kira": [14, 70, 200, 550, 750, 950],
+          "ev_maliyeti": 100,
+          "otel_maliyeti": 100,
+          "ipotek": 90
+        },
+        {
+          "ad": "Perge Antik Kenti",
+          "Fiyat": 200,
+          "kira": [16, 80, 220, 600, 800, 1000],
+          "ev_maliyeti": 100,
+          "otel_maliyeti": 100,
+          "ipotek": 100
+        }
+      ]
+    },
+
+    "kirmizi": {
+      "renk_kodu": "#FF0000",
+      "grup_adi": "Kırmızı",
+      "mulkler": [
+        {
+          "ad": "Pamukkale Travertenleri",
+          "Fiyat": 220,
+          "kira": [18, 90, 250, 700, 875, 1050],
+          "ev_maliyeti": 150,
+          "otel_maliyeti": 150,
+          "ipotek": 110
+        },
+        {
+          "ad": "Safranbolu Evleri",
+          "Fiyat": 220,
+          "kira": [18, 90, 250, 700, 875, 1050],
+          "ev_maliyeti": 150,
+          "otel_maliyeti": 150,
+          "ipotek": 110
+        },
+        {
+          "ad": "Galata Kulesi",
+          "Fiyat": 240,
+          "kira": [20, 100, 300, 750, 925, 1100],
+          "ev_maliyeti": 150,
+          "otel_maliyeti": 150,
+          "ipotek": 120
+        }
+      ]
+    },
+
+    "sari": {
+      "renk_kodu": "#FFFF00",
+      "grup_adi": "Sarı",
+      "mulkler": [
+        {
+          "ad": "Sultanahmet Camii",
+          "Fiyat": 260,
+          "kira": [22, 110, 330, 800, 975, 1150],
+          "ev_maliyeti": 150,
+          "otel_maliyeti": 150,
+          "ipotek": 130
+        },
+        {
+          "ad": "Süleymaniye Camii",
+          "Fiyat": 260,
+          "kira": [22, 110, 330, 800, 975, 1150],
+          "ev_maliyeti": 150,
+          "otel_maliyeti": 150,
+          "ipotek": 130
+        },
+        {
+          "ad": "Selimiye Camii",
+          "Fiyat": 280,
+          "kira": [24, 120, 360, 850, 1025, 1200],
+          "ev_maliyeti": 150,
+          "otel_maliyeti": 150,
+          "ipotek": 140
+        }
+      ]
+    },
+
+    "yesil": {
+      "renk_kodu": "#008000",
+      "grup_adi": "Yeşil",
+      "mulkler": [
+        {
+          "ad": "Ayasofya",
+          "Fiyat": 300,
+          "kira": [26, 130, 390, 900, 1100, 1275],
+          "ev_maliyeti": 200,
+          "otel_maliyeti": 200,
+          "ipotek": 150
+        },
+        {
+          "ad": "Topkapı Sarayı",
+          "Fiyat": 300,
+          "kira": [26, 130, 390, 900, 1100, 1275],
+          "ev_maliyeti": 200,
+          "otel_maliyeti": 200,
+          "ipotek": 150
+        },
+        {
+          "ad": "Sümela Manastırı",
+          "Fiyat": 320,
+          "kira": [28, 150, 450, 1000, 1200, 1400],
+          "ev_maliyeti": 200,
+          "otel_maliyeti": 200,
+          "ipotek": 160
+        }
+      ]
+    },
+
+    "mavi": {
+      "renk_kodu": "#0000FF",
+      "grup_adi": "Mavi",
+      "mulkler": [
+        {
+          "ad": "Anıtkabir",
+          "Fiyat": 350,
+          "kira": [35, 175, 500, 1100, 1300, 1500],
+          "ev_maliyeti": 200,
+          "otel_maliyeti": 200,
+          "ipotek": 175
+        },
+        {
+          "ad": "Dolmabahçe Sarayı",
+          "Fiyat": 400,
+          "kira": [50, 200, 600, 1400, 1700, 2000],
+          "ev_maliyeti": 200,
+          "otel_maliyeti": 200,
+          "ipotek": 200
+        }
+      ]
+    }
+  }
+}
