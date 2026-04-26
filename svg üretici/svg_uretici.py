@@ -16,14 +16,26 @@ def load_data(json_path: str) -> dict:
 
 
 def resim_bul(ad: str, images_dir: Path) -> str:
+    """Mülk adına göre resim dosyasını bul ve base64 data URI döndür"""
+    import base64
+    path = ""
     for ext in ['png', 'jpg', 'jpeg']:
         p = images_dir / f"{ad}.{ext}"
         if p.exists():
-            return str(p.resolve())
-    for f in images_dir.iterdir():
-        if f.stem.lower() in ad.lower() or ad.lower() in f.stem.lower():
-            return str(f.resolve())
-    return ""
+            path = p
+            break
+    if not path:
+        for f in images_dir.iterdir():
+            if f.stem.lower() in ad.lower() or ad.lower() in f.stem.lower():
+                path = f
+                break
+    if not path:
+        return ""
+    with open(path, 'rb') as f:
+        data = base64.b64encode(f.read()).decode('utf-8')
+    ext = str(path).rsplit('.', 1)[-1].lower()
+    mime = {'png': 'png', 'jpg': 'jpeg', 'jpeg': 'jpeg'}.get(ext, 'png')
+    return f"data:image/{mime};base64,{data}"
 
 
 def font_size(ad, base=2.8):
@@ -45,7 +57,7 @@ def generate_mulk_svg(mulk, resim_yolu):
   <rect width="28" height="10" x="0.5" y="0.5" style="fill:{renk}" />
   <text x="14.5" y="14" font-size="{fs}" text-anchor="middle" font-family="Arial" font-weight="bold">{ad}</text>
 {img}
-  <text x="14.5" y="58" font-size="3" text-anchor="middle" font-family="Arial" font-weight="bold">₺{fiyat}</text>
+  <text x="14.5" y="58" font-size="3" text-anchor="middle" font-family="Arial" font-weight="bold">TL {fiyat}</text>
 </svg>
 '''
 
@@ -67,27 +79,27 @@ def generate_tapu_svg(mulk):
   <line x1="0.5" y1="17.5" x2="54.5" y2="17.5" stroke="black" stroke-width="0.3" />
   <g font-size="2.5" font-family="Arial">
     <text x="3" y="23">Kira – Sadece Arsa</text>
-    <text x="52" y="23" text-anchor="end">{kira[0]} ₺</text>
+    <text x="52" y="23" text-anchor="end">{kira[0]} TL </text>
     <text x="3" y="27">Kira – Tam Set</text>
-    <text x="52" y="27" text-anchor="end">{kira[0]*2} ₺</text>
+    <text x="52" y="27" text-anchor="end">{kira[0]*2} TL </text>
     <text x="3" y="31">1 Ev Kirası</text>
-    <text x="52" y="31" text-anchor="end">{kira[1]} ₺</text>
+    <text x="52" y="31" text-anchor="end">{kira[1]} TL </text>
     <text x="3" y="35">2 Ev Kirası</text>
-    <text x="52" y="35" text-anchor="end">{kira[2]} ₺</text>
+    <text x="52" y="35" text-anchor="end">{kira[2]} TL </text>
     <text x="3" y="39">3 Ev Kirası</text>
-    <text x="52" y="39" text-anchor="end">{kira[3]} ₺</text>
+    <text x="52" y="39" text-anchor="end">{kira[3]} TL </text>
     <text x="3" y="43">4 Ev Kirası</text>
-    <text x="52" y="43" text-anchor="end">{kira[4]} ₺</text>
+    <text x="52" y="43" text-anchor="end">{kira[4]} TL </text>
     <text x="3" y="47">Otel Kirası</text>
-    <text x="52" y="47" text-anchor="end">{kira[5]} ₺</text>
+    <text x="52" y="47" text-anchor="end">{kira[5]} TL </text>
     <line x1="3" y1="49.5" x2="54.5" y2="49.5" stroke="black" stroke-width="0.2" />
     <text x="3" y="54">Evin Maliyeti (Her biri)</text>
-    <text x="52" y="54" text-anchor="end">{ev_m} ₺</text>
+    <text x="52" y="54" text-anchor="end">{ev_m} TL </text>
     <text x="3" y="58">Otelin Maliyeti (4 Ev +)</text>
-    <text x="52" y="58" text-anchor="end">{otel_m} ₺</text>
+    <text x="52" y="58" text-anchor="end">{otel_m} TL </text>
     <line x1="0.5" y1="60.5" x2="54.5" y2="60.5" stroke="black" stroke-width="0.2" />
     <text x="3" y="65">İpotek Değeri</text>
-    <text x="52" y="65" text-anchor="end">{ipotek} ₺</text>
+    <text x="52" y="65" text-anchor="end">{ipotek} TL </text>
   </g>
 </svg>
 '''
@@ -107,15 +119,15 @@ def generate_ulasim_svg(item, resim_yolu):
 {img}
   <g font-size="1.5" font-family="Arial">
     <text x="2" y="32">1 İstasyon</text>
-    <text x="28" y="32" text-anchor="end">{kira[0]} ₺</text>
+    <text x="28" y="32" text-anchor="end">{kira[0]} TL </text>
     <text x="2" y="35">2 İstasyon</text>
-    <text x="28" y="35" text-anchor="end">{kira[1]} ₺</text>
+    <text x="28" y="35" text-anchor="end">{kira[1]} TL </text>
     <text x="2" y="38">3 İstasyon</text>
-    <text x="28" y="38" text-anchor="end">{kira[2]} ₺</text>
+    <text x="28" y="38" text-anchor="end">{kira[2]} TL </text>
     <text x="2" y="41">4 İstasyon</text>
-    <text x="28" y="41" text-anchor="end">{kira[3]} ₺</text>
+    <text x="28" y="41" text-anchor="end">{kira[3]} TL </text>
   </g>
-  <text x="14.5" y="58" font-size="3" text-anchor="middle" font-family="Arial" font-weight="bold">₺{fiyat}</text>
+  <text x="14.5" y="58" font-size="3" text-anchor="middle" font-family="Arial" font-weight="bold">TL {fiyat}</text>
 </svg>
 '''
 
@@ -133,11 +145,11 @@ def generate_utility_svg(item, resim_yolu):
 {img}
   <g font-size="1.4" font-family="Arial">
     <text x="2" y="32">1 kurum varsa:</text>
-    <text x="2" y="35">Zar × {c[0]} ₺</text>
+    <text x="2" y="35">Zar × {c[0]} TL </text>
     <text x="2" y="40">2 kurum varsa:</text>
-    <text x="2" y="43">Zar × {c[1]} ₺</text>
+    <text x="2" y="43">Zar × {c[1]} TL </text>
   </g>
-  <text x="14.5" y="58" font-size="3" text-anchor="middle" font-family="Arial" font-weight="bold">₺{fiyat}</text>
+  <text x="14.5" y="58" font-size="3" text-anchor="middle" font-family="Arial" font-weight="bold">TL {fiyat}</text>
 </svg>
 '''
 
@@ -156,16 +168,16 @@ def generate_ulasim_tapu_svg(item):
   <line x1="0.5" y1="17.5" x2="54.5" y2="17.5" stroke="black" stroke-width="0.3" />
   <g font-size="2.5" font-family="Arial">
     <text x="3" y="25">1 İstasyon sahibiyseniz</text>
-    <text x="52" y="25" text-anchor="end">{kira[0]} ₺</text>
+    <text x="52" y="25" text-anchor="end">{kira[0]} TL </text>
     <text x="3" y="31">2 İstasyon sahibiyseniz</text>
-    <text x="52" y="31" text-anchor="end">{kira[1]} ₺</text>
+    <text x="52" y="31" text-anchor="end">{kira[1]} TL </text>
     <text x="3" y="37">3 İstasyon sahibiyseniz</text>
-    <text x="52" y="37" text-anchor="end">{kira[2]} ₺</text>
+    <text x="52" y="37" text-anchor="end">{kira[2]} TL </text>
     <text x="3" y="43">4 İstasyon sahibiyseniz</text>
-    <text x="52" y="43" text-anchor="end">{kira[3]} ₺</text>
+    <text x="52" y="43" text-anchor="end">{kira[3]} TL </text>
     <line x1="0.5" y1="47" x2="54.5" y2="47" stroke="black" stroke-width="0.2" />
     <text x="3" y="53">İpotek Değeri</text>
-    <text x="52" y="53" text-anchor="end">{fiyat // 2} ₺</text>
+    <text x="52" y="53" text-anchor="end">{fiyat // 2} TL </text>
   </g>
 </svg>
 '''
@@ -184,12 +196,12 @@ def generate_utility_tapu_svg(item):
   <line x1="0.5" y1="17.5" x2="54.5" y2="17.5" stroke="black" stroke-width="0.3" />
   <g font-size="2.5" font-family="Arial">
     <text x="3" y="25">1 kurum sahibiyseniz:</text>
-    <text x="3" y="31">Zar toplamı × {c[0]} ₺</text>
+    <text x="3" y="31">Zar toplamı × {c[0]} TL </text>
     <text x="3" y="40">2 kurum sahibiyseniz:</text>
-    <text x="3" y="46">Zar toplamı × {c[1]} ₺</text>
+    <text x="3" y="46">Zar toplamı × {c[1]} TL </text>
     <line x1="0.5" y1="50" x2="54.5" y2="50" stroke="black" stroke-width="0.2" />
     <text x="3" y="56">İpotek Değeri</text>
-    <text x="52" y="56" text-anchor="end">{fiyat // 2} ₺</text>
+    <text x="52" y="56" text-anchor="end">{fiyat // 2} TL </text>
   </g>
 </svg>
 '''
@@ -204,7 +216,7 @@ def generate_vergi_svg(item, resim_yolu):
   <rect x="0.5" y="0.5" width="28" height="59" fill="none" stroke="black" stroke-width="0.5" />
   <text x="15" y="6" font-size="4" text-anchor="middle" font-family="Arial" font-weight="bold">{ad}</text>
 {img}
-  <text x="15" y="45" font-size="3" text-anchor="middle" font-family="Arial">Öde: ₺{ucret}</text>
+  <text x="15" y="45" font-size="3" text-anchor="middle" font-family="Arial">Öde: TL {ucret}</text>
 </svg>
 '''
 
