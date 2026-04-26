@@ -1,16 +1,26 @@
 # =============================================================
-# MONOPOLY TÜRKİYE - Taban Plakalar (Merkez Dolgu)
+# MONOPOLY TÜRKİYE - L-Şekilli Taban Plakalar
 # FlashForge AD5X — Max baskı alanı: 220x220x220mm
 #
-# Tahtanın iç 400×400mm alanı 4 adet 200×200mm plaka ile doldurulur.
-# Tile'lar birbirine puzzle tab ile bağlanır; plakalar içten destek sağlar.
+# 4 adet identical L-plaka — her köşeye 1 adet, 90° döndürerek
 #
-# Tahta iç alan hesabı:
-#   Dış kenar    : 480mm (60mm köşe + 9×40mm tile + 60mm köşe)
-#   Tile derinlik: 40mm
-#   İç alan      : 480 - 2×40 = 400mm → 4 adet 200×200mm plaka ✓
+# Her L-plaka taşır:
+#   1 köşe tile (60×60mm)
+#   4 kol-A tile (yatay) × 40mm = 160mm
+#   4 kol-B tile (dikey)  × 40mm = 160mm
+#   → toplam 9 tile / plaka
 #
-# Baskı: 4 adet 200×200×3mm — hepsi 220×220mm alana sığar
+# 9. tile (her kenar ortası): puzzle tab ile iki plaka arasında köprü yapar
+# 4 L × 9 tile + 4 orta = 40 tile (tam tahta çevresi)
+#
+# L-plaka boyutu: 220×220×3mm — baskı alanına tam sığar
+# 4 kopya bas; montajda her birini 90° döndür
+#
+# Montaj sırası:
+#   1. 4 L-plakayı köşelere yerleştir
+#   2. Köşe tile'ı köşeye, kol tile'larını kollara yerleştir
+#      (her tile puzzle tab ile bitişiğine kilitlenir)
+#   3. Her kenar ortasındaki 9. tile'ı son olarak ekle
 # =============================================================
 
 import FreeCAD
@@ -20,41 +30,84 @@ import os
 
 doc = FreeCAD.newDocument("MonopolyTabanPlaka")
 
-# --- Plaka boyutları ---
-PLATE_SIZE = 200.0   # her plaka 200×200mm
-PLATE_H    =   3.0   # plaka kalınlığı
-TOL        =   0.3   # plakalar arası boşluk (2 plaka yan yana: 0.15mm her tarafta)
+TILE_W   = 40.0   # normal tile genişliği (40×40mm kare)
+CORNER_W = 60.0   # köşe tile genişliği (60×60mm kare)
+N_TILES  = 4      # her kolda tile sayısı
+BASE_H   = 3.0    # plaka kalınlığı
 
-# 4 plaka 2×2 dizilimde → toplam 400×400mm
-# Görsel yerleşimde yan yana gösterilir (basım için biri seçilir)
+ARM_L  = N_TILES * TILE_W   # 4×40 = 160mm
+TOTAL  = CORNER_W + ARM_L   # 60+160 = 220mm → baskı alanına tam sığar
 
-GAP = 20  # FreeCAD görüntüsünde plakalar arası boşluk
 
-for row in range(2):
-    for col in range(2):
-        idx = row * 2 + col + 1
+def make_L_plate():
+    """
+    Düz L-şekilli taban plaka — 220×220×3mm.
+    Köşe bölgesi (60×60) + yatay kol (160×40) + dikey kol (40×160).
+    Tile'lar plakanın ÜSTÜNE yerleştirilir; puzzle tabları birbirine kilitler.
+    """
+    # Köşe bölgesi
+    corner = Part.makeBox(CORNER_W, CORNER_W, BASE_H)
 
-        plate = Part.makeBox(PLATE_SIZE - TOL, PLATE_SIZE - TOL, PLATE_H)
-        plate.translate(FreeCAD.Vector(
-            col * (PLATE_SIZE + GAP),
-            row * (PLATE_SIZE + GAP),
-            0
-        ))
+    # Yatay kol (Kol-A): köşenin sağına uzanır
+    arm_a = Part.makeBox(ARM_L, TILE_W, BASE_H)
+    arm_a.translate(FreeCAD.Vector(CORNER_W, 0, 0))
 
-        obj = doc.addObject("Part::Feature", f"TabanPlaka_{idx}")
-        obj.Shape = plate
-        obj.ViewObject.ShapeColor  = (0.85, 0.72, 0.52)
-        obj.ViewObject.DisplayMode = "Shaded"
+    # Dikey kol (Kol-B): köşenin üstüne uzanır
+    arm_b = Part.makeBox(TILE_W, ARM_L, BASE_H)
+    arm_b.translate(FreeCAD.Vector(0, CORNER_W, 0))
+
+    return corner.fuse(arm_a).fuse(arm_b)
+
+
+# =============================================================
+# 4 plakanın döndürülmüş hali — görsel yerleşim
+# Her kopya aynı STL; slicer'da 0° / 90° / 180° / 270° döndürülür
+# =============================================================
+
+GAP = 30   # FreeCAD görünümündeki plakalar arası boşluk
+cx = cy = TOTAL / 2   # döndürme merkezi
+
+corners = [
+    ("L_Plaka_1_AltSol",  0,   (0.85, 0.72, 0.52)),
+    ("L_Plaka_2_AltSag",  90,  (0.72, 0.55, 0.33)),
+    ("L_Plaka_3_UstSag",  180, (0.60, 0.42, 0.22)),
+    ("L_Plaka_4_UstSol",  270, (0.50, 0.33, 0.14)),
+]
+
+for i, (label, deg, color) in enumerate(corners):
+    plate = make_L_plate()
+
+    if deg != 0:
+        plate.rotate(
+            FreeCAD.Vector(cx, cy, 0),
+            FreeCAD.Vector(0, 0, 1),
+            deg
+        )
+
+    # Yan yana diz
+    plate.translate(FreeCAD.Vector(i * (TOTAL + GAP), 0, 0))
+
+    obj = doc.addObject("Part::Feature", label)
+    obj.Shape = plate
+    obj.ViewObject.ShapeColor  = color
+    obj.ViewObject.DisplayMode = "Shaded"
 
 doc.recompute()
 FreeCADGui.activeDocument().activeView().viewIsometric()
 FreeCADGui.SendMsgToActiveView("ViewFit")
 doc.saveAs(os.path.expanduser("~/monopoly_taban_plaka.FCStd"))
 
-print("✅ Taban plakalar oluşturuldu: 4 adet 199.7×199.7×3mm")
-print("   2×2 dizilimde → toplam 400×400mm iç alan")
-print("   Her biri 220×220mm yazıcı alanına sığar.")
+print("✅ L-Şekilli taban plakalar oluşturuldu (4 adet — aynı STL, 4 kopya bas):")
+print(f"   Boyut : {TOTAL:.0f} × {TOTAL:.0f} × {BASE_H:.0f} mm")
+print(f"   Her L : 1 köşe tile + {N_TILES} kol-A tile + {N_TILES} kol-B tile = {1+2*N_TILES} tile")
+print(f"   4 L + 4 orta tile = {4*(1+2*N_TILES)+4} tile (tam çevre) ✓")
 print()
 print("Montaj:")
-print("   Tile çerçevesini (40 tile) önce birbirine bağla.")
-print("   4 plakayı iç alana yan yana yerleştir.")
+print("  AltSol (0°)  → GO köşesi")
+print("  AltSag (90°) → Hapis köşesi")
+print("  UstSag(180°) → Ücretsiz Park köşesi")
+print("  UstSol(270°) → Hapse Git köşesi")
+print()
+print("  1. 4 plakayı köşelere yerleştir (90°'lik artışlarla döndür)")
+print("  2. Tile'ları plaka üstüne koy, puzzle tab ile birleştir")
+print("  3. Her kenar ortasındaki 9. tile'ı en son tak")
