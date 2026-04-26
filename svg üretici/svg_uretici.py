@@ -55,64 +55,65 @@ def generate_tapu_svg(mulk):
     ad, renk, fiyat = mulk['ad'], mulk['renk'], mulk['Fiyat']
     kira = mulk['kira']
     ev_m, otel_m, ipotek = mulk['ev_maliyeti'], mulk['otel_maliyeti'], mulk['ipotek']
-    fs = font_size(ad, 4)
+    fs = font_size(ad, 5) 
     tc = text_color(renk)
     return f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg width="29mm" height="60mm" viewBox="0 0 29 60" xmlns="http://www.w3.org/2000/svg">
-  <rect x="0.5" y="0.5" width="28" height="59" fill="none" stroke="black" stroke-width="0.5" />
-  <text x="15" y="3.5" font-size="2.5" text-anchor="middle" font-family="Arial">Tapu Senedi</text>
-  <line x1="0.5" y1="5" x2="28.5" y2="5" stroke="black" stroke-width="0.3" />
-  <rect x="0.5" y="5" width="28" height="7" style="fill:{renk}" />
-  <text x="15" y="9.5" font-size="{fs}" text-anchor="middle" font-family="Arial" font-weight="bold" fill="{tc}">{ad}</text>
-  <line x1="0.5" y1="12" x2="28.5" y2="12" stroke="black" stroke-width="0.3" />
-  <g font-size="1.5" font-family="Arial">
-    <text x="2" y="15">Kira – Sadece Arsa</text>
-    <text x="28" y="15" text-anchor="end">{kira[0]} ₺</text>
-    <text x="2" y="17.5">Kira – Tam Set</text>
-    <text x="28" y="17.5" text-anchor="end">{kira[0]*2} ₺</text>
-    <text x="2" y="20">1 Ev Kirası</text>
-    <text x="28" y="20" text-anchor="end">{kira[1]} ₺</text>
-    <text x="2" y="22.5">2 Ev Kirası</text>
-    <text x="28" y="22.5" text-anchor="end">{kira[2]} ₺</text>
-    <text x="2" y="25">3 Ev Kirası</text>
-    <text x="28" y="25" text-anchor="end">{kira[3]} ₺</text>
-    <text x="2" y="27.5">4 Ev Kirası</text>
-    <text x="28" y="27.5" text-anchor="end">{kira[4]} ₺</text>
-    <text x="2" y="30">Otel Kirası</text>
-    <text x="28" y="30" text-anchor="end">{kira[5]} ₺</text>
-    <line x1="2" y1="31.5" x2="28.5" y2="31.5" stroke="black" stroke-width="0.2" />
-    <text x="2" y="34">Evin Maliyeti (Her biri)</text>
-    <text x="28" y="34" text-anchor="end">{ev_m} ₺</text>
-    <text x="2" y="36.5">Otelin Maliyeti (4 Ev +)</text>
-    <text x="28" y="36.5" text-anchor="end">{otel_m} ₺</text>
-    <line x1="0.5" y1="38" x2="28.5" y2="38" stroke="black" stroke-width="0.2" />
-    <text x="2" y="40.5">İpotek Değeri</text>
-    <text x="28" y="40.5" text-anchor="end">{ipotek} ₺</text>
+<svg width="55mm" height="80mm" viewBox="0 0 55 80" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0.5" y="0.5" width="54" height="79" fill="none" stroke="black" stroke-width="0.5" />
+  <text x="27.5" y="5.5" font-size="3.5" text-anchor="middle" font-family="Arial">Tapu Senedi</text>
+  <line x1="0.5" y1="7.5" x2="54.5" y2="7.5" stroke="black" stroke-width="0.3" />
+  <rect x="0.5" y="7.5" width="54" height="10" style="fill:{renk}" />
+  <text x="27.5" y="14" font-size="{fs}" text-anchor="middle" font-family="Arial" font-weight="bold" fill="{tc}">{ad}</text>
+  <line x1="0.5" y1="17.5" x2="54.5" y2="17.5" stroke="black" stroke-width="0.3" />
+  <g font-size="2.5" font-family="Arial">
+    <text x="3" y="23">Kira – Sadece Arsa</text>
+    <text x="52" y="23" text-anchor="end">{kira[0]} ₺</text>
+    <text x="3" y="27">Kira – Tam Set</text>
+    <text x="52" y="27" text-anchor="end">{kira[0]*2} ₺</text>
+    <text x="3" y="31">1 Ev Kirası</text>
+    <text x="52" y="31" text-anchor="end">{kira[1]} ₺</text>
+    <text x="3" y="35">2 Ev Kirası</text>
+    <text x="52" y="35" text-anchor="end">{kira[2]} ₺</text>
+    <text x="3" y="39">3 Ev Kirası</text>
+    <text x="52" y="39" text-anchor="end">{kira[3]} ₺</text>
+    <text x="3" y="43">4 Ev Kirası</text>
+    <text x="52" y="43" text-anchor="end">{kira[4]} ₺</text>
+    <text x="3" y="47">Otel Kirası</text>
+    <text x="52" y="47" text-anchor="end">{kira[5]} ₺</text>
+    <line x1="3" y1="49.5" x2="54.5" y2="49.5" stroke="black" stroke-width="0.2" />
+    <text x="3" y="54">Evin Maliyeti (Her biri)</text>
+    <text x="52" y="54" text-anchor="end">{ev_m} ₺</text>
+    <text x="3" y="58">Otelin Maliyeti (4 Ev +)</text>
+    <text x="52" y="58" text-anchor="end">{otel_m} ₺</text>
+    <line x1="0.5" y1="60.5" x2="54.5" y2="60.5" stroke="black" stroke-width="0.2" />
+    <text x="3" y="65">İpotek Değeri</text>
+    <text x="52" y="65" text-anchor="end">{ipotek} ₺</text>
   </g>
 </svg>
 '''
 
 
 # ── Ulaşım Kartı ──
-def generate_ulasim_svg(item):
+def generate_ulasim_svg(item, resim_yolu):
     ad, fiyat = item['ad'], item['Fiyat']
     kira = item['kira']
     fs = font_size(ad, 3)
+    img = f'  <image width="27.55" height="20" preserveAspectRatio="xMidYMid slice" xlink:href="{resim_yolu}" x="0.72" y="8" />' if resim_yolu else ''
     return f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg width="29mm" height="60mm" viewBox="0 0 29 60" xmlns="http://www.w3.org/2000/svg">
+<svg width="29mm" height="60mm" viewBox="0 0 29 60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <rect x="0.5" y="0.5" width="28" height="59" fill="none" stroke="black" stroke-width="0.5" />
   <text x="15" y="5" font-size="{fs}" text-anchor="middle" font-family="Arial" font-weight="bold">{ad}</text>
   <line x1="0.5" y1="7" x2="28.5" y2="7" stroke="black" stroke-width="0.3" />
-  <text x="15" y="10" font-size="1.8" text-anchor="middle" font-family="Arial">🚂</text>
+{img}
   <g font-size="1.5" font-family="Arial">
-    <text x="2" y="20">1 İstasyon</text>
-    <text x="28" y="20" text-anchor="end">{kira[0]} ₺</text>
-    <text x="2" y="23">2 İstasyon</text>
-    <text x="28" y="23" text-anchor="end">{kira[1]} ₺</text>
-    <text x="2" y="26">3 İstasyon</text>
-    <text x="28" y="26" text-anchor="end">{kira[2]} ₺</text>
-    <text x="2" y="29">4 İstasyon</text>
-    <text x="28" y="29" text-anchor="end">{kira[3]} ₺</text>
+    <text x="2" y="32">1 İstasyon</text>
+    <text x="28" y="32" text-anchor="end">{kira[0]} ₺</text>
+    <text x="2" y="35">2 İstasyon</text>
+    <text x="28" y="35" text-anchor="end">{kira[1]} ₺</text>
+    <text x="2" y="38">3 İstasyon</text>
+    <text x="28" y="38" text-anchor="end">{kira[2]} ₺</text>
+    <text x="2" y="41">4 İstasyon</text>
+    <text x="28" y="41" text-anchor="end">{kira[3]} ₺</text>
   </g>
   <text x="14.5" y="58" font-size="3" text-anchor="middle" font-family="Arial" font-weight="bold">₺{fiyat}</text>
 </svg>
@@ -120,19 +121,21 @@ def generate_ulasim_svg(item):
 
 
 # ── Utility Kartı ──
-def generate_utility_svg(item):
+def generate_utility_svg(item, resim_yolu):
     ad, fiyat = item['ad'], item['Fiyat']
     c = item['kira_carpan']
+    img = f'  <image width="27.55" height="20" preserveAspectRatio="xMidYMid slice" xlink:href="{resim_yolu}" x="0.72" y="8" />' if resim_yolu else ''
     return f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg width="29mm" height="60mm" viewBox="0 0 29 60" xmlns="http://www.w3.org/2000/svg">
+<svg width="29mm" height="60mm" viewBox="0 0 29 60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <rect x="0.5" y="0.5" width="28" height="59" fill="none" stroke="black" stroke-width="0.5" />
   <text x="15" y="6" font-size="3.5" text-anchor="middle" font-family="Arial" font-weight="bold">{ad}</text>
-  <line x1="0.5" y1="8" x2="28.5" y2="8" stroke="black" stroke-width="0.3" />
+  <line x1="0.5" y1="7" x2="28.5" y2="7" stroke="black" stroke-width="0.3" />
+{img}
   <g font-size="1.4" font-family="Arial">
-    <text x="2" y="18">1 kurum varsa:</text>
-    <text x="2" y="21">Zar × {c[0]} ₺</text>
-    <text x="2" y="28">2 kurum varsa:</text>
-    <text x="2" y="31">Zar × {c[1]} ₺</text>
+    <text x="2" y="32">1 kurum varsa:</text>
+    <text x="2" y="35">Zar × {c[0]} ₺</text>
+    <text x="2" y="40">2 kurum varsa:</text>
+    <text x="2" y="43">Zar × {c[1]} ₺</text>
   </g>
   <text x="14.5" y="58" font-size="3" text-anchor="middle" font-family="Arial" font-weight="bold">₺{fiyat}</text>
 </svg>
@@ -143,26 +146,26 @@ def generate_utility_svg(item):
 def generate_ulasim_tapu_svg(item):
     ad, fiyat = item['ad'], item['Fiyat']
     kira = item['kira']
-    fs = font_size(ad, 3.5)
+    fs = font_size(ad, 5)
     return f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg width="29mm" height="60mm" viewBox="0 0 29 60" xmlns="http://www.w3.org/2000/svg">
-  <rect x="0.5" y="0.5" width="28" height="59" fill="none" stroke="black" stroke-width="0.5" />
-  <text x="15" y="3.5" font-size="2.5" text-anchor="middle" font-family="Arial">Tapu Senedi</text>
-  <line x1="0.5" y1="5" x2="28.5" y2="5" stroke="black" stroke-width="0.3" />
-  <text x="15" y="10" font-size="{fs}" text-anchor="middle" font-family="Arial" font-weight="bold">{ad}</text>
-  <line x1="0.5" y1="12" x2="28.5" y2="12" stroke="black" stroke-width="0.3" />
-  <g font-size="1.5" font-family="Arial">
-    <text x="2" y="17">1 İstasyon sahibiyseniz</text>
-    <text x="28" y="17" text-anchor="end">{kira[0]} ₺</text>
-    <text x="2" y="21">2 İstasyon sahibiyseniz</text>
-    <text x="28" y="21" text-anchor="end">{kira[1]} ₺</text>
-    <text x="2" y="25">3 İstasyon sahibiyseniz</text>
-    <text x="28" y="25" text-anchor="end">{kira[2]} ₺</text>
-    <text x="2" y="29">4 İstasyon sahibiyseniz</text>
-    <text x="28" y="29" text-anchor="end">{kira[3]} ₺</text>
-    <line x1="0.5" y1="31" x2="28.5" y2="31" stroke="black" stroke-width="0.2" />
-    <text x="2" y="34">İpotek Değeri</text>
-    <text x="28" y="34" text-anchor="end">{fiyat // 2} ₺</text>
+<svg width="55mm" height="80mm" viewBox="0 0 55 80" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0.5" y="0.5" width="54" height="79" fill="none" stroke="black" stroke-width="0.5" />
+  <text x="27.5" y="5.5" font-size="3.5" text-anchor="middle" font-family="Arial">Tapu Senedi</text>
+  <line x1="0.5" y1="7.5" x2="54.5" y2="7.5" stroke="black" stroke-width="0.3" />
+  <text x="27.5" y="14" font-size="{fs}" text-anchor="middle" font-family="Arial" font-weight="bold">{ad}</text>
+  <line x1="0.5" y1="17.5" x2="54.5" y2="17.5" stroke="black" stroke-width="0.3" />
+  <g font-size="2.5" font-family="Arial">
+    <text x="3" y="25">1 İstasyon sahibiyseniz</text>
+    <text x="52" y="25" text-anchor="end">{kira[0]} ₺</text>
+    <text x="3" y="31">2 İstasyon sahibiyseniz</text>
+    <text x="52" y="31" text-anchor="end">{kira[1]} ₺</text>
+    <text x="3" y="37">3 İstasyon sahibiyseniz</text>
+    <text x="52" y="37" text-anchor="end">{kira[2]} ₺</text>
+    <text x="3" y="43">4 İstasyon sahibiyseniz</text>
+    <text x="52" y="43" text-anchor="end">{kira[3]} ₺</text>
+    <line x1="0.5" y1="47" x2="54.5" y2="47" stroke="black" stroke-width="0.2" />
+    <text x="3" y="53">İpotek Değeri</text>
+    <text x="52" y="53" text-anchor="end">{fiyat // 2} ₺</text>
   </g>
 </svg>
 '''
@@ -173,33 +176,35 @@ def generate_utility_tapu_svg(item):
     ad, fiyat = item['ad'], item['Fiyat']
     c = item['kira_carpan']
     return f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg width="29mm" height="60mm" viewBox="0 0 29 60" xmlns="http://www.w3.org/2000/svg">
-  <rect x="0.5" y="0.5" width="28" height="59" fill="none" stroke="black" stroke-width="0.5" />
-  <text x="15" y="3.5" font-size="2.5" text-anchor="middle" font-family="Arial">Tapu Senedi</text>
-  <line x1="0.5" y1="5" x2="28.5" y2="5" stroke="black" stroke-width="0.3" />
-  <text x="15" y="10" font-size="3.5" text-anchor="middle" font-family="Arial" font-weight="bold">{ad}</text>
-  <line x1="0.5" y1="12" x2="28.5" y2="12" stroke="black" stroke-width="0.3" />
-  <g font-size="1.4" font-family="Arial">
-    <text x="2" y="17">1 kurum sahibiyseniz:</text>
-    <text x="2" y="20">Zar toplamı × {c[0]} ₺</text>
-    <text x="2" y="26">2 kurum sahibiyseniz:</text>
-    <text x="2" y="29">Zar toplamı × {c[1]} ₺</text>
-    <line x1="0.5" y1="32" x2="28.5" y2="32" stroke="black" stroke-width="0.2" />
-    <text x="2" y="35">İpotek Değeri</text>
-    <text x="28" y="35" text-anchor="end">{fiyat // 2} ₺</text>
+<svg width="55mm" height="80mm" viewBox="0 0 55 80" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0.5" y="0.5" width="54" height="79" fill="none" stroke="black" stroke-width="0.5" />
+  <text x="27.5" y="5.5" font-size="3.5" text-anchor="middle" font-family="Arial">Tapu Senedi</text>
+  <line x1="0.5" y1="7.5" x2="54.5" y2="7.5" stroke="black" stroke-width="0.3" />
+  <text x="27.5" y="14" font-size="5" text-anchor="middle" font-family="Arial" font-weight="bold">{ad}</text>
+  <line x1="0.5" y1="17.5" x2="54.5" y2="17.5" stroke="black" stroke-width="0.3" />
+  <g font-size="2.5" font-family="Arial">
+    <text x="3" y="25">1 kurum sahibiyseniz:</text>
+    <text x="3" y="31">Zar toplamı × {c[0]} ₺</text>
+    <text x="3" y="40">2 kurum sahibiyseniz:</text>
+    <text x="3" y="46">Zar toplamı × {c[1]} ₺</text>
+    <line x1="0.5" y1="50" x2="54.5" y2="50" stroke="black" stroke-width="0.2" />
+    <text x="3" y="56">İpotek Değeri</text>
+    <text x="52" y="56" text-anchor="end">{fiyat // 2} ₺</text>
   </g>
 </svg>
 '''
 
 
 # ── Vergi Kartı ──
-def generate_vergi_svg(item):
+def generate_vergi_svg(item, resim_yolu):
     ad, ucret = item['ad'], item['ucret']
+    img = f'  <image width="27.55" height="25" preserveAspectRatio="xMidYMid slice" xlink:href="{resim_yolu}" x="0.72" y="8" />' if resim_yolu else ''
     return f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg width="29mm" height="60mm" viewBox="0 0 29 60" xmlns="http://www.w3.org/2000/svg">
+<svg width="29mm" height="60mm" viewBox="0 0 29 60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <rect x="0.5" y="0.5" width="28" height="59" fill="none" stroke="black" stroke-width="0.5" />
-  <text x="15" y="20" font-size="4" text-anchor="middle" font-family="Arial" font-weight="bold">{ad}</text>
-  <text x="15" y="35" font-size="3" text-anchor="middle" font-family="Arial">Öde: ₺{ucret}</text>
+  <text x="15" y="6" font-size="4" text-anchor="middle" font-family="Arial" font-weight="bold">{ad}</text>
+{img}
+  <text x="15" y="45" font-size="3" text-anchor="middle" font-family="Arial">Öde: ₺{ucret}</text>
 </svg>
 '''
 
@@ -233,21 +238,24 @@ def main():
 
     # Ulaşım
     for item in data.get('ulasim', []):
-        save(mulk_dir / f"{item['ad']}.svg", generate_ulasim_svg(item))
+        resim = resim_bul(item['ad'], images_dir)
+        save(mulk_dir / f"{item['ad']}.svg", generate_ulasim_svg(item, resim))
         save(tapu_dir / f"{item['ad']}_tapu.svg", generate_ulasim_tapu_svg(item))
         count += 1
         print(f"  🚂 {item['ad']} (kart + tapu)")
 
     # Utility
     for item in data.get('utility', []):
-        save(mulk_dir / f"{item['ad']}.svg", generate_utility_svg(item))
+        resim = resim_bul(item['ad'], images_dir)
+        save(mulk_dir / f"{item['ad']}.svg", generate_utility_svg(item, resim))
         save(tapu_dir / f"{item['ad']}_tapu.svg", generate_utility_tapu_svg(item))
         count += 1
         print(f"  ⚡ {item['ad']} (kart + tapu)")
 
     # Vergiler
     for item in data.get('vergiler', []):
-        save(mulk_dir / f"{item['ad']}.svg", generate_vergi_svg(item))
+        resim = resim_bul(item['ad'], images_dir)
+        save(mulk_dir / f"{item['ad']}.svg", generate_vergi_svg(item, resim))
         count += 1
         print(f"  💰 {item['ad']}")
 
