@@ -49,7 +49,7 @@ def svg_to_png(svg_path, w_mm, h_mm):
     return ImageReader(buf)
 
 
-def place_svgs_on_pages(c, svg_files, card_w_mm, card_h_mm):
+def place_svgs_on_pages(c, svg_files, card_w_mm, card_h_mm, mirror_x=False):
     card_w = card_w_mm * mm
     card_h = card_h_mm * mm
 
@@ -67,6 +67,10 @@ def place_svgs_on_pages(c, svg_files, card_w_mm, card_h_mm):
         pos = i % per_page
         col = pos % cols
         row = pos // cols
+
+        # Arka yüzde yatay sırayı tersle (kağıt çevrilince eşleşsin)
+        if mirror_x:
+            col = (cols - 1) - col
 
         x = x_offset + col * card_w
         y = A4_H - y_offset - (row + 1) * card_h
@@ -102,6 +106,23 @@ def main():
         place_svgs_on_pages(c, tapu_svgs, 55, 80)
         c.save()
         print(f"✓ {pdf_path.name} ({len(tapu_svgs)} kart)")
+
+    # Şans ve Kamu Fonu kartları (ön-arka çift taraflı)
+    kart_dir = script_dir / "kart_svg"
+    if kart_dir.exists():
+        for prefix, label in [("sans", "Şans"), ("kamu", "Kamu Fonu")]:
+            on_svgs = sorted(kart_dir.glob(f"{prefix}_*_on.svg"))
+            arka_svgs = sorted(kart_dir.glob(f"{prefix}_*_arka.svg"))
+            if on_svgs:
+                pdf_path = output_dir / f"{prefix}_kartlari.pdf"
+                c = canvas.Canvas(str(pdf_path), pagesize=A4)
+                # Ön yüzler
+                place_svgs_on_pages(c, on_svgs, 80, 55)
+                # Arka yüzler (yatay aynalı sıra, çift taraflı baskı için)
+                c.showPage()
+                place_svgs_on_pages(c, arka_svgs, 80, 55, mirror_x=True)
+                c.save()
+                print(f"✓ {pdf_path.name} ({len(on_svgs)} {label} kartı, ön + arka)")
 
     print(f"\nPDF'ler {output_dir} klasörüne kaydedildi!")
 

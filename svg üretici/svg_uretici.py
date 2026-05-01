@@ -226,6 +226,87 @@ def save(path, content):
         f.write(content)
 
 
+def img_to_base64(path):
+    import base64
+    with open(path, 'rb') as f:
+        data = base64.b64encode(f.read()).decode('utf-8')
+    ext = str(path).rsplit('.', 1)[-1].lower()
+    mime = {'png': 'png', 'jpg': 'jpeg', 'jpeg': 'jpeg'}.get(ext, 'png')
+    return f"data:image/{mime};base64,{data}"
+
+
+# ── Şans / Kamu Fonu Ön Yüz ──
+def etki_ikonu_svg(etki):
+    """Etkiye göre basit SVG ikon döndür"""
+    if 'para_al' in etki:
+        return '<circle cx="52" cy="18" r="6" fill="#4CAF50" opacity="0.15"/><text x="52" y="21" font-size="8" text-anchor="middle" font-family="Arial" fill="#4CAF50">+</text>'
+    if 'para_ode' in etki:
+        return '<circle cx="52" cy="18" r="6" fill="#F44336" opacity="0.15"/><text x="52" y="21" font-size="8" text-anchor="middle" font-family="Arial" fill="#F44336">-</text>'
+    if 'cezaevine' in etki:
+        return '<rect x="46" y="12" width="12" height="12" rx="1" fill="none" stroke="#333" stroke-width="0.8"/><line x1="49" y1="12" x2="49" y2="24" stroke="#333" stroke-width="0.6"/><line x1="52" y1="12" x2="52" y2="24" stroke="#333" stroke-width="0.6"/><line x1="55" y1="12" x2="55" y2="24" stroke="#333" stroke-width="0.6"/>'
+    if 'hapisten_cikis' in etki:
+        return '<rect x="46" y="12" width="12" height="12" rx="1" fill="none" stroke="#4CAF50" stroke-width="0.8"/><path d="M50 18 L54 22 L60 14" fill="none" stroke="#4CAF50" stroke-width="1"/>'
+    if 'ulasim' in etki:
+        return '<circle cx="52" cy="18" r="6" fill="#795548" opacity="0.15"/><text x="52" y="21" font-size="7" text-anchor="middle" font-family="Arial" fill="#795548">T</text>'
+    if 'altyapi' in etki:
+        return '<circle cx="52" cy="18" r="6" fill="#FF9800" opacity="0.15"/><text x="52" y="21.5" font-size="8" text-anchor="middle" font-family="Arial" fill="#FF9800">~</text>'
+    if 'geri_git' in etki:
+        return '<path d="M46 18 L58 18 M46 18 L50 14 M46 18 L50 22" fill="none" stroke="#333" stroke-width="0.8"/>'
+    if 'pahali' in etki:
+        return '<path d="M47 24 L52 12 L57 24 Z" fill="none" stroke="#333" stroke-width="0.8"/><line x1="49" y1="20" x2="55" y2="20" stroke="#333" stroke-width="0.6"/>'
+    if 'herkese_para_ode' in etki or 'herkesten_para_al' in etki:
+        return '<circle cx="48" cy="18" r="3" fill="none" stroke="#333" stroke-width="0.6"/><circle cx="52" cy="16" r="3" fill="none" stroke="#333" stroke-width="0.6"/><circle cx="56" cy="18" r="3" fill="none" stroke="#333" stroke-width="0.6"/>'
+    return ''
+
+
+def generate_kart_on_svg(kart, renk, baslik_renk):
+    baslik = kart['baslik']
+    aciklama = kart['aciklama']
+    ikon = etki_ikonu_svg(kart['etki'])
+
+    words = aciklama.split()
+    lines, line = [], ""
+    for w in words:
+        if len(line + " " + w) > 32:
+            lines.append(line.strip())
+            line = w
+        else:
+            line = (line + " " + w).strip()
+    if line:
+        lines.append(line)
+
+    total_h = len(lines) * 5.5
+    y_start = 30 + (22 - total_h) / 2
+    text_lines = "\n".join(
+        f'    <text x="52" y="{y_start + i*5.5}" font-size="3.8" text-anchor="middle" font-family="Arial">{l}</text>'
+        for i, l in enumerate(lines)
+    )
+
+    return f'''<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80mm" height="55mm" viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="80" height="55" fill="white" />
+  <rect x="0.5" y="0.5" width="79" height="54" fill="none" stroke="black" stroke-width="0.5" />
+  <rect x="0.5" y="0.5" width="18" height="54" fill="{renk}" />
+  <text x="9.5" y="22" font-size="5.5" text-anchor="middle" font-family="Arial" font-weight="bold" fill="{baslik_renk}" transform="rotate(-90, 9.5, 27.5)">{baslik}</text>
+  <line x1="18.5" y1="0.5" x2="18.5" y2="54.5" stroke="black" stroke-width="0.3" />
+  {ikon}
+  <line x1="30" y1="26" x2="74" y2="26" stroke="#ddd" stroke-width="0.3" />
+  <g>
+{text_lines}
+  </g>
+</svg>
+'''
+
+
+# ── Şans / Kamu Fonu Arka Yüz ──
+def generate_kart_arka_svg(resim_base64):
+    return f'''<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80mm" height="55mm" viewBox="0 0 80 55" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <image width="80" height="55" preserveAspectRatio="xMidYMid slice" xlink:href="{resim_base64}" x="0" y="0" />
+</svg>
+'''
+
+
 def main():
     script_dir = Path(__file__).parent.resolve()
     data = load_data(str(script_dir / "mulkler.json"))
@@ -272,6 +353,34 @@ def main():
         print(f"  💰 {item['ad']}")
 
     print(f"\nToplam {count} kart oluşturuldu!")
+
+    # Şans ve Kamu Fonu kartları
+    kart_json = script_dir / "kamu fonu ve sans kartlari.json"
+    if kart_json.exists():
+        kart_data = load_data(str(kart_json))
+        kart_dir = script_dir / "kart_svg"
+        kart_dir.mkdir(exist_ok=True)
+
+        resim_dir = script_dir / "sans ve komu fonu"
+        sans_arka = img_to_base64(resim_dir / "sans.png")
+        kamu_arka = img_to_base64(resim_dir / "kamu fonu.png")
+
+        kart_count = 0
+        for kart in kart_data.get('sans_kartlari', []):
+            save(kart_dir / f"sans_{kart['id']:02d}_on.svg",
+                 generate_kart_on_svg(kart, "#C41E3A", "white"))
+            save(kart_dir / f"sans_{kart['id']:02d}_arka.svg",
+                 generate_kart_arka_svg(sans_arka))
+            kart_count += 1
+
+        for kart in kart_data.get('kamu_fonu_kartlari', []):
+            save(kart_dir / f"kamu_{kart['id']:02d}_on.svg",
+                 generate_kart_on_svg(kart, "#1B3A5C", "white"))
+            save(kart_dir / f"kamu_{kart['id']:02d}_arka.svg",
+                 generate_kart_arka_svg(kamu_arka))
+            kart_count += 1
+
+        print(f"🎴 {kart_count} şans/kamu fonu kartı oluşturuldu (ön + arka)")
 
 
 if __name__ == "__main__":

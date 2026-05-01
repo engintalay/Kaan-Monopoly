@@ -1,0 +1,198 @@
+{
+  "sans_kartlari": [
+    {
+      "id": 1,
+      "baslik": "Şans",
+      "aciklama": "E-Devlet'ten borç sorguladın, temiz çıktı. 100 TL al.",
+      "etki": "para_al_100"
+    },
+    {
+      "id": 2,
+      "baslik": "Şans",
+      "aciklama": "Bayram harçlığı topladın. 150 TL al.",
+      "etki": "para_al_150"
+    },
+    {
+      "id": 3,
+      "baslik": "Şans",
+      "aciklama": "Trafik cezası yedin. 100 TL öde.",
+      "etki": "para_ode_100"
+    },
+    {
+      "id": 4,
+      "baslik": "Şans",
+      "aciklama": "En yakın ulaşım noktasına git (Otogar / Tren Garı).",
+      "etki": "en_yakin_ulasim"
+    },
+    {
+      "id": 5,
+      "baslik": "Şans",
+      "aciklama": "KYK bursun yattı. 200 TL al.",
+      "etki": "para_al_200"
+    },
+    {
+      "id": 6,
+      "baslik": "Şans",
+      "aciklama": "Cezaevine git. Doğrudan git, başlangıçtan geçme.",
+      "etki": "cezaevine_git"
+    },
+    {
+      "id": 7,
+      "baslik": "Şans",
+      "aciklama": "Arkadaşlarınla hesap ödedin. Her oyuncuya 25 TL öde.",
+      "etki": "herkese_para_ode"
+    },
+    {
+      "id": 8,
+      "baslik": "Şans",
+      "aciklama": "Vergi iadesi aldın. 100 TL al.",
+      "etki": "para_al_100"
+    },
+    {
+      "id": 9,
+      "baslik": "Şans",
+      "aciklama": "3 kare geri git.",
+      "etki": "geri_git_3"
+    },
+    {
+      "id": 10,
+      "baslik": "Şans",
+      "aciklama": "En pahalı mülke git.",
+      "etki": "en_pahali_mulke_git"
+    },
+    {
+      "id": 11,
+      "baslik": "Şans",
+      "aciklama": "Elektrik ve su faturası geldi. 75 TL öde.",
+      "etki": "para_ode_75"
+    },
+    {
+      "id": 12,
+      "baslik": "Şans",
+      "aciklama": "Aileden harçlık aldın. 100 TL al.",
+      "etki": "para_al_100"
+    },
+    {
+      "id": 13,
+      "baslik": "Şans",
+      "aciklama": "Cezaevinden ücretsiz çıkış kartı.",
+      "etki": "hapisten_cikis_karti"
+    },
+    {
+      "id": 14,
+      "baslik": "Şans",
+      "aciklama": "En yakın elektrik veya su idaresine git.",
+      "etki": "altyapiya_git"
+    },
+    {
+      "id": 15,
+      "baslik": "Şans",
+      "aciklama": "Düğüne gittin, takı taktın. 50 TL öde.",
+      "etki": "para_ode_50"
+    },
+    {
+      "id": 16,
+      "baslik": "Şans",
+      "aciklama": "İş buldun! 150 TL al.",
+      "etki": "para_al_150"
+    }
+  ],
+  "kamu_fonu_kartlari": [
+    {
+      "id": 1,
+      "baslik": "Kamu Fonu",
+      "aciklama": "Devlet desteği aldın. 100 TL kazan.",
+      "etki": "para_al_100"
+    },
+    {
+      "id": 2,
+      "baslik": "Kamu Fonu",
+      "aciklama": "Hastane masrafı çıktı. 50 TL öde.",
+      "etki": "para_ode_50"
+    },
+    {
+      "id": 3,
+      "baslik": "Kamu Fonu",
+      "aciklama": "KYK kredisi aldın. 150 TL al.",
+      "etki": "para_al_150"
+    },
+    {
+      "id": 4,
+      "baslik": "Kamu Fonu",
+      "aciklama": "Cezaevinden ücretsiz çıkış kartı.",
+      "etki": "hapisten_cikis_karti"
+    },
+    {
+      "id": 5,
+      "baslik": "Kamu Fonu",
+      "aciklama": "Cezaevine git. Doğrudan git.",
+      "etki": "cezaevine_git"
+    },
+    {
+      "id": 6,
+      "baslik": "Kamu Fonu",
+      "aciklama": "Emekli ikramiyesi aldın. 200 TL al.",
+      "etki": "para_al_200"
+    },
+    {
+      "id": 7,
+      "baslik": "Kamu Fonu",
+      "aciklama": "Okul masrafları. 100 TL öde.",
+      "etki": "para_ode_100"
+    },
+    {
+      "id": 8,
+      "baslik": "Kamu Fonu",
+      "aciklama": "Sigorta geri ödemesi. 100 TL al.",
+      "etki": "para_al_100"
+    },
+    {
+      "id": 9,
+      "baslik": "Kamu Fonu",
+      "aciklama": "Doğum günün! Her oyuncudan 20 TL al.",
+      "etki": "herkesten_para_al"
+    },
+    {
+      "id": 10,
+      "baslik": "Kamu Fonu",
+      "aciklama": "Trafik cezası. 50 TL öde.",
+      "etki": "para_ode_50"
+    },
+    {
+      "id": 11,
+      "baslik": "Kamu Fonu",
+      "aciklama": "Yatırım yaptın, kazandın. 150 TL al.",
+      "etki": "para_al_150"
+    },
+    {
+      "id": 12,
+      "baslik": "Kamu Fonu",
+      "aciklama": "Ev tadilatı yaptın. 75 TL öde.",
+      "etki": "para_ode_75"
+    },
+    {
+      "id": 13,
+      "baslik": "Kamu Fonu",
+      "aciklama": "Bağış yaptın. 25 TL öde.",
+      "etki": "para_ode_25"
+    },
+    {
+      "id": 14,
+      "baslik": "Kamu Fonu",
+      "aciklama": "TOKİ kurasından ev çıktı! 200 TL al.",
+      "etki": "para_al_200"
+    },
+    {
+      "id": 15,
+      "baslik": "Kamu Fonu",
+      "aciklama": "Mahkemeyi kazandın. 100 TL al.",
+      "etki": "para_al_100"
+    },
+    {
+      "id": 16,
+      "baslik": "Kamu Fonu",
+      "aciklama": "Vergi borcu ödedin. 100 TL öde.",
+      "etki": "para_ode_100"
+    }
+  ]
+}
