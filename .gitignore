@@ -15,3 +15,5 @@
 # Sistem
 .DS_Store
 __pycache__/
+
+*.svg
