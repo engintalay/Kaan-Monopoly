@@ -12,7 +12,7 @@ def generate_corner_svg(resim_yolu):
     img = resim_to_base64(resim_yolu)
     return f'''<?xml version="1.0" encoding="UTF-8"?>
 <svg width="6.5cm" height="6.5cm" viewBox="0 0 65 65" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <image width="65" height="65" preserveAspectRatio="none" xlink:href="{img}" x="0" y="0" />
+    <image width="65" height="65" preserveAspectRatio="xMidYMid meet" xlink:href="{img}" x="0" y="0" />
 </svg>
 '''
 

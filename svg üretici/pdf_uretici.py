@@ -49,9 +49,10 @@ def svg_to_png(svg_path, w_mm, h_mm):
     return ImageReader(buf)
 
 
-def place_svgs_on_pages(c, svg_files, card_w_mm, card_h_mm, mirror_x=False):
+def place_svgs_on_pages(c, svg_files, card_w_mm, card_h_mm, mirror_x=False, bleed_mm=0):
     card_w = card_w_mm * mm
     card_h = card_h_mm * mm
+    bleed = bleed_mm * mm
 
     cols = int((A4_W - 2 * MARGIN) // card_w)
     rows = int((A4_H - 2 * MARGIN) // card_h)
@@ -77,7 +78,51 @@ def place_svgs_on_pages(c, svg_files, card_w_mm, card_h_mm, mirror_x=False):
 
         try:
             img = svg_to_png(svg_path, card_w_mm, card_h_mm)
-            c.drawImage(img, x, y, card_w, card_h)
+            # If mirror_x is requested (backs page), rotate each card appropriately
+            # so that when sheet is flipped for double-sided printing the
+            # front and back align correctly. Rotate around card center.
+            # shrink more to provide extra inner margin so text doesn't touch edges
+            scale_front = 0.92
+            scale_back = 0.80
+            scale = scale_back if mirror_x else scale_front
+            if mirror_x:
+                cx = x + card_w / 2
+                cy = y + card_h / 2
+                c.saveState()
+                c.translate(cx, cy)
+                # apply inward horizontal shift (toward page center) before rotation
+                # determine side: left halves shift right (+), right halves shift left (-)
+                try:
+                    cols_local = cols
+                except NameError:
+                    cols_local = 1
+                shift_mm = 2.5
+                shift_pts = shift_mm * mm
+                shift_dir = 1 if col < (cols_local / 2) else -1
+                # vertical inward shift: move toward page center (top rows move down, bottom rows move up)
+                try:
+                    rows_local = rows
+                except NameError:
+                    rows_local = 1
+                shift_dir_y = -1 if row < (rows_local / 2) else 1
+                shift_y_pts = shift_mm * mm
+                c.translate(shift_dir * shift_pts, shift_dir_y * shift_y_pts)
+                # For long-edge duplex printing, rotate 180° so front/back align
+                c.rotate(180)
+                # After rotating 180°, draw with same width/height (no swap)
+                draw_w = card_w * scale + 2 * bleed
+                draw_h = card_h * scale + 2 * bleed
+                c.drawImage(img, -draw_w / 2, -draw_h / 2, draw_w, draw_h,
+                            preserveAspectRatio=True, anchor='c')
+                c.restoreState()
+            else:
+                # Draw front image with preserved aspect ratio and centered
+                draw_w = card_w * scale + 2 * bleed
+                draw_h = card_h * scale + 2 * bleed
+                x_centered = x + (card_w - draw_w) / 2
+                y_centered = y + (card_h - draw_h) / 2
+                c.drawImage(img, x_centered, y_centered, draw_w, draw_h,
+                            preserveAspectRatio=True, anchor='c')
         except Exception as e:
             print(f"  ⚠ {svg_path.name}: {e}")
 
@@ -123,6 +168,15 @@ def main():
                 place_svgs_on_pages(c, arka_svgs, 80, 55, mirror_x=True)
                 c.save()
                 print(f"✓ {pdf_path.name} ({len(on_svgs)} {label} kartı, ön + arka)")
+
+                # Also produce a print-ready PDF with bleed and crop marks
+                pdf_path_pr = output_dir / f"{prefix}_kartlari_printready.pdf"
+                c_pr = canvas.Canvas(str(pdf_path_pr), pagesize=A4)
+                place_svgs_on_pages(c_pr, on_svgs, 80, 55, bleed_mm=3)
+                c_pr.showPage()
+                place_svgs_on_pages(c_pr, arka_svgs, 80, 55, mirror_x=True, bleed_mm=3)
+                c_pr.save()
+                print(f"✓ {pdf_path_pr.name} ({len(on_svgs)} {label} kartı, print-ready)")
 
     print(f"\nPDF'ler {output_dir} klasörüne kaydedildi!")
 

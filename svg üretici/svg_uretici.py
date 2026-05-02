@@ -50,7 +50,7 @@ def text_color(renk):
 def generate_mulk_svg(mulk, resim_yolu):
     ad, renk, fiyat = mulk['ad'], mulk['renk'], mulk['Fiyat']
     fs = font_size(ad)
-    img = f'  <image width="27.55" height="30" preserveAspectRatio="none" xlink:href="{resim_yolu}" x="0.72" y="15.5" />' if resim_yolu else '  <rect x="0.72" y="15.5" width="27.55" height="30" fill="#cccccc" stroke="#999" stroke-width="0.2" />'
+    img = f'  <image width="27.55" height="30" preserveAspectRatio="xMidYMid meet" xlink:href="{resim_yolu}" x="0.72" y="15.5" />' if resim_yolu else '  <rect x="0.72" y="15.5" width="27.55" height="30" fill="#cccccc" stroke="#999" stroke-width="0.2" />'
     return f'''<?xml version="1.0" encoding="UTF-8"?>
 <svg width="29mm" height="60mm" viewBox="0 0 29 60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <rect x="0.5" y="0.5" width="28" height="59" fill="none" stroke="black" stroke-width="0.5" />

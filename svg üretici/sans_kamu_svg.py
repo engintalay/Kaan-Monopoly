@@ -43,7 +43,7 @@ def generate_sans_kamu_svg(kart, resim_base64, renk):
   <rect x="0.5" y="0.5" width="28" height="59" fill="none" stroke="black" stroke-width="0.5" />
   <rect width="28" height="10" x="0.5" y="0.5" style="fill:{renk}" />
   <text x="14.5" y="14" font-size="3" text-anchor="middle" font-family="Arial" font-weight="bold">{baslik}</text>
-  <image width="27.55" height="25" preserveAspectRatio="none" xlink:href="{resim_base64}" x="0.72" y="16" />
+    <image width="27.55" height="25" preserveAspectRatio="xMidYMid meet" xlink:href="{resim_base64}" x="0.72" y="16" />
 {text_content}
 </svg>
 '''

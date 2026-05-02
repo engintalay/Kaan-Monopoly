@@ -195,7 +195,7 @@
   <image
      width="28"
      height="25.5"
-     preserveAspectRatio="none"
+     preserveAspectRatio="xMidYMid meet"
      xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYgAAAGLCAIAAABStZLfAAAAA3NCSVQICAjb4U/gAAAgAElEQVR4
 nOy9W5NtOXIelrn2rqpz6cvMNDlkD2c4Q0kkJZIa8kEKyY5w6A/4xeGf6B9gRdgPDkbIoYtlWSYt
 ibIp0RQvMkdDDefa3dN9zqmqvVf6AUDml8gE1tpV1T1NasBhn11rAYkEkPllAkhg8f/wz/6YfGIi
